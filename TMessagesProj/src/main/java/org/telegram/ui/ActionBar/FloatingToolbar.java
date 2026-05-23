@@ -279,7 +279,7 @@ public final class FloatingToolbar {
                 } else if (
                     !(
 //                        addedTranslate &&
-                        (menuItem.getItemId() == android.R.id.textAssist || menuItem.getItemId() == TRANSLATE2)
+                        (menuItem.getItemId() == TRANSLATE || menuItem.getItemId() == TRANSLATE2)
                     ) &&
                     (
                         menuItem.getItemId() != R.id.menu_regular ||

@@ -83,6 +83,23 @@
   <init>(com.google.android.exoplayer2.upstream.DataSource$Factory);
 }
 
+# Huawei Services
+-keep class com.huawei.hianalytics.**{ *; }
+-keep class com.huawei.updatesdk.**{ *; }
+-keep class com.huawei.hms.**{ *; }
+
+# Don't warn about checkerframework and Kotlin annotations
+-dontwarn org.checkerframework.**
+-dontwarn javax.annotation.**
+
+-keep class io.nano.tex.** {*;}
+
+# JLatexMath: macro/atom classes are loaded reflectively by Class.forName
+-keep class org.scilab.forge.jlatexmath.** { *; }
+-keep class ru.noties.jlatexmath.** { *; }
+-dontwarn org.scilab.forge.jlatexmath.**
+
+
 # Used by AtomicReferenceFieldUpdater and sun.misc.Unsafe
 -keepclassmembers class com.google.common.util.concurrent.AbstractFuture** {
   *** waiters;

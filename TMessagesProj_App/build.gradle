@@ -62,6 +62,8 @@ android {
         versionName APP_VERSION_NAME
 
         multiDexEnabled true
+
+        manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty("mapsApiKey", "")]
     }
 
     bundle {

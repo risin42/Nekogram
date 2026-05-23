@@ -387,7 +387,7 @@ public class TranslateController extends BaseController {
         "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv",
         "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "la", "lv", "lt", "lb",
         "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny",
-        "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st",
+        "or", "ps", "fa", "pl", "pt", "pt-br", "pa", "ro", "ru", "sm", "gd", "sr", "st",
         "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg",
         "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy",
         "xh", "yi", "yo", "zu"
@@ -548,7 +548,7 @@ public class TranslateController extends BaseController {
             ArrayList<Long> toNotify = new ArrayList<>();
             for (long dialogId : translatableDialogs) {
                 String language = detectedDialogLanguage.get(dialogId);
-                if (language != null && Translator.isLanguageRestricted(language)) {
+                if (language != null && isLanguageRestricted(language)) {
                     cancelTranslations(dialogId);
                     translatingDialogs.remove(dialogId);
                     toNotify.add(dialogId);
@@ -885,7 +885,7 @@ public class TranslateController extends BaseController {
             isTranslatable(messageObject) &&
             messageObject.messageOwner.originalLanguage != null &&
             !UNKNOWN_LANGUAGE.equals(messageObject.messageOwner.originalLanguage) &&
-            !Translator.isLanguageRestricted(messageObject.messageOwner.originalLanguage)
+            !isLanguageRestricted(messageObject.messageOwner.originalLanguage)
         );
 
         if (isUnknown) {
@@ -941,7 +941,7 @@ public class TranslateController extends BaseController {
         req.id = message.getId();
         if (language != null) {
             req.flags |= TLObject.FLAG_0;
-            req.to_lang = language;
+            req.to_lang = normalizeLanguage(language);
         }
         ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
             if (res != null) {
@@ -1126,7 +1126,7 @@ public class TranslateController extends BaseController {
                     req.peer = getMessagesController().getInputPeer(dialogId);
                     req.id = pendingTranslation1.messageIds;
                 }
-                req.to_lang = pendingTranslation1.language;
+                req.to_lang = normalizeLanguage(pendingTranslation1.language);
 
                 final int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                     final ArrayList<Integer> ids;
@@ -1410,7 +1410,7 @@ public class TranslateController extends BaseController {
                         req.text.add(src.solution);
                     }
                 }
-                req.to_lang = pendingTranslation1.language;
+                req.to_lang = normalizeLanguage(pendingTranslation1.language);
 
                 final int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                     final ArrayList<Integer> ids;
@@ -1638,14 +1638,7 @@ public class TranslateController extends BaseController {
     }
 
     private boolean isLanguageRestricted(String lng) {
-        if (getUserConfig().isPremium()) {
-            return RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(lng);
-        }
-        try {
-            return TextUtils.equals(LocaleController.getInstance().getCurrentLocaleInfo().pluralLangCode, lng);
-        } catch (Exception ignore) {
-            return false;
-        }
+        return Translator.isLanguageRestricted(lng);
     }
 
     private void loadTranslatingDialogsCached() {
@@ -1675,7 +1668,7 @@ public class TranslateController extends BaseController {
             if ("null".equals(to)) to = null;
             if (from != null) {
                 detectedDialogLanguage.put(did, from);
-                if (!Translator.isLanguageRestricted(from)) {
+                if (!isLanguageRestricted(from)) {
                     translatingDialogs.put(did, !disabled);
                     translatableDialogs.add(did);
                 }
@@ -1771,7 +1764,7 @@ public class TranslateController extends BaseController {
     public boolean canTranslateStory(TL_stories.StoryItem storyItem) {
         return storyItem != null && !TextUtils.isEmpty(storyItem.caption) && !MessageHelper.isLinkOnlyMessage(storyItem.caption, storyItem.entities) && (
             storyItem.detectedLng == null && storyItem.translatedText != null && TextUtils.equals(storyItem.translatedLng, TranslateAlert2.getToLanguage()) ||
-            storyItem.detectedLng != null && !Translator.isLanguageRestricted(storyItem.detectedLng)
+            storyItem.detectedLng != null && !isLanguageRestricted(storyItem.detectedLng)
         );
     }
 
@@ -1882,7 +1875,7 @@ public class TranslateController extends BaseController {
         }
         return messageObject != null && messageObject.messageOwner != null && !TextUtils.isEmpty(messageObject.messageOwner.message) && (
             detectedLanguage == null && messageObject.messageOwner.translatedText != null && TextUtils.equals(messageObject.messageOwner.translatedToLanguage, TranslateAlert2.getToLanguage()) ||
-            detectedLanguage != null && !Translator.isLanguageRestricted(messageObject.messageOwner.originalLanguage) &&
+            detectedLanguage != null && !isLanguageRestricted(messageObject.messageOwner.originalLanguage) &&
             !MessageHelper.isLinkOrEmojiOnlyMessage(messageObject)
         ) && !messageObject.translated;
     }
@@ -1934,6 +1927,18 @@ public class TranslateController extends BaseController {
                 }
             }
         });
+    }
+
+    public static String normalizeLanguage(String lng) {
+        if (lng == null) return null;
+        if (lng.contains("_")) {
+            final String[] parts = lng.split("_", 2);
+            return parts[0].toLowerCase() + "-" + parts[1].toUpperCase();
+        } else if (lng.contains("-")) {
+            final String[] parts = lng.split("-", 2);
+            return parts[0].toLowerCase() + "-" + parts[1].toUpperCase();
+        }
+        return lng;
     }
 
     private static class MessageKey {

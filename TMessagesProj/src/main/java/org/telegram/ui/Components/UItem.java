@@ -98,6 +98,13 @@ public class UItem extends AdapterWithDiffUtils.Item {
         i.intValue = LayoutHelper.MATCH_PARENT;
         return i;
     }
+    public static UItem asCustomShadow(View view, boolean noclip) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM_SHADOW, false);
+        i.view = view;
+        i.intValue = LayoutHelper.MATCH_PARENT;
+        i.checked = noclip;
+        return i;
+    }
     public static UItem asCustom(View view, int heightDp) {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM, false);
         i.view = view;
@@ -161,11 +168,38 @@ public class UItem extends AdapterWithDiffUtils.Item {
         return i;
     }
 
+    public static UItem asTopView(CharSequence title, CharSequence subtitle, String setName, String emoji) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_TOPVIEW, false);
+        i.text = title;
+        i.animatedText = subtitle;
+        i.subtext = setName;
+        i.textValue = emoji;
+        return i;
+    }
+
+    public static UItem asTopView(CharSequence title, CharSequence subtitle, int emojiSize, String setName, String emoji) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_TOPVIEW, false);
+        i.text = title;
+        i.animatedText = subtitle;
+        i.subtext = setName;
+        i.textValue = emoji;
+        i.intValue = emojiSize;
+        return i;
+    }
+
     public static UItem asTopView(CharSequence text, String setName, String emoji) {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_TOPVIEW, false);
         i.text = text;
         i.subtext = setName;
         i.textValue = emoji;
+        return i;
+    }
+
+    public static UItem asTopView(CharSequence title, CharSequence text, int lottieResId) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_TOPVIEW, false);
+        i.text = title;
+        i.animatedText = text;
+        i.iconResId = lottieResId;
         return i;
     }
 
@@ -350,6 +384,12 @@ public class UItem extends AdapterWithDiffUtils.Item {
     public static UItem asAddChat(Long dialogId) {
         UItem item = new UItem(UniversalAdapter.VIEW_TYPE_USER_ADD, false);
         item.dialogId = dialogId;
+        return item;
+    }
+    public static UItem asAddChat(Long dialogId, String query) {
+        UItem item = new UItem(UniversalAdapter.VIEW_TYPE_USER_ADD, false);
+        item.dialogId = dialogId;
+        item.textValue = query;
         return item;
     }
 
@@ -756,6 +796,7 @@ public class UItem extends AdapterWithDiffUtils.Item {
     public boolean itemContentEquals(UItem item) {
         if (viewType == item.viewType) {
             if (id != item.id) return false;
+            if (enabled != item.enabled) return false;
             switch (viewType) {
                 case UniversalAdapter.VIEW_TYPE_SHADOW:
                     if (text == null && item.text == null)

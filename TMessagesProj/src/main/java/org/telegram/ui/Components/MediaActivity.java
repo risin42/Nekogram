@@ -153,6 +153,8 @@ public class MediaActivity extends BaseFragment implements SharedMediaLayout.Sha
             applyBulletin = null;
             AndroidUtilities.runOnUIThread(runnable);
         }
+        sharedMediaPreloader.onDestroy(this);
+        sharedMediaPreloader.removeDelegate(this);
     }
 
     @Override
@@ -809,7 +811,7 @@ public class MediaActivity extends BaseFragment implements SharedMediaLayout.Sha
             }
         }
 
-        final ImageLocation thumbLocation = ImageLocation.getForUserOrChat(avatarObject, ImageLocation.TYPE_SMALL);
+        final ImageLocation thumbLocation = ImageLocation.getForUserOrChat(currentAccount, avatarObject, ImageLocation.TYPE_SMALL);
         avatarImageView.setImage(thumbLocation, "50_50", avatarDrawable, avatarObject);
 
         if (nameTextView[0] != null && TextUtils.isEmpty(nameTextView[0].getText())) {

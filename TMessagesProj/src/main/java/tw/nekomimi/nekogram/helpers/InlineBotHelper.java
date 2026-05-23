@@ -10,7 +10,6 @@ import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;
 
-import tw.nekomimi.nekogram.Extra;
 import tw.nekomimi.nekogram.NekoConfig;
 
 public class InlineBotHelper extends BaseController {
@@ -89,7 +88,7 @@ public class InlineBotHelper extends BaseController {
         var text = s.trim();
         if (text.contains(" ")) return null;
         if (text.startsWith("https://x.com/") || text.startsWith("https://twitter.com/")) {
-            return Extra.TWPIC_BOT_USERNAME;
+            return "TwPicBot";
         }
         return null;
     }

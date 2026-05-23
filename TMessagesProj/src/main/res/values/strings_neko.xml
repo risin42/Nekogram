@@ -325,6 +325,10 @@
     <string name="TabsPositionTop">Top</string>
     <string name="TabsPositionBottom">Bottom</string>
     <string name="StrokeOnViews">Glare effects</string>
+    <string name="CameraInVideoMessages">Camera in Video Messages</string>
+    <string name="AskCamera">Ask every time</string>
+    <string name="FrontCamera">Front Camera</string>
+    <string name="RearCamera">Rear Camera</string>
 
     <!-- Accessibility -->
     <string name="AccessibilitySettings">Accessibility settings</string>

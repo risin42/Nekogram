@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.net.Uri;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -131,21 +130,7 @@ public class PopupHelper {
 
     public static void showCopyPopup(BaseFragment fragment, CharSequence title, View anchorView, float x, float y, Runnable callback) {
         Context context = fragment.getParentActivity();
-        ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, fragment.getResourceProvider()) {
-            final Path path = new Path();
-
-            @Override
-            protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-                canvas.save();
-                path.rewind();
-                AndroidUtilities.rectTmp.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
-                path.addRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(6), AndroidUtilities.dp(6), Path.Direction.CW);
-                canvas.clipPath(path);
-                boolean draw = super.drawChild(canvas, child, drawingTime);
-                canvas.restore();
-                return draw;
-            }
-        };
+        ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, fragment.getResourceProvider());
         popupLayout.setFitItems(true);
         ActionBarPopupWindow popupWindow = AlertsCreator.createSimplePopup(fragment, popupLayout, anchorView, x, y);
         ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_copy, title, false, fragment.getResourceProvider()).setOnClickListener(v -> {

@@ -1411,7 +1411,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 menu.add(Menu.NONE, R.id.menu_quote, 1, LocaleController.getString(R.string.Quote));
                 menu.add(Menu.NONE, android.R.id.selectAll, 2, android.R.string.selectAll);
                 menu.add(Menu.NONE, android.R.id.shareText, 3, LocaleController.getString(R.string.ShareFile));
-                menu.add(Menu.NONE, android.R.id.textAssist, 4, LocaleController.getString(R.string.TranslateMessage));
+                menu.add(Menu.NONE, TRANSLATE, 4, LocaleController.getString(R.string.TranslateMessage));
                 return true;
             }
 
@@ -1422,8 +1422,10 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 if (copyItem != null) {
                     copyItem.setVisible(canCopy());
                 }
-                menu.findItem(android.R.id.shareText).setVisible(canCopy());
-                menu.findItem(android.R.id.textAssist).setVisible(canCopy());
+                MenuItem shareItem = menu.findItem(android.R.id.shareText);
+                if (shareItem != null) {
+                    shareItem.setVisible(canCopy());
+                }
                 if (selectedView != null) {
                     CharSequence charSequence = getText(selectedView, false);
                     if (!canCopy()) {
@@ -1477,25 +1479,19 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                     AndroidUtilities.cancelRunOnUIThread(showActionsRunnable);
                     AndroidUtilities.runOnUIThread(showActionsRunnable);
                     return true;
-                } else if (itemId == android.R.id.textAssist) {
-                    if (!isInSelectionMode()) {
-                        return true;
-                    }
+                } else if (itemId == TRANSLATE) {
                     CharSequence str = getSelectedText();
                     if (str == null) {
                         return true;
                     }
                     var view = selectedView instanceof View ? (View) selectedView : null;
-                    Translator.showTranslateDialog(textSelectionOverlay.getContext(), str.toString(), false, null, null, translateFromLanguage, view, getResourcesProvider());
+                    Translator.showTranslateDialog(textSelectionOverlay.getContext(), str.toString(), !canCopy(), null, null, translateFromLanguage, view, getResourcesProvider());
                     hideActions();
                     clear(true);
                     if (TextSelectionHelper.this.callback != null) {
                         TextSelectionHelper.this.callback.onTextTranslated();
                     }
                 } else if (itemId == android.R.id.shareText) {
-                    if (!isInSelectionMode()) {
-                        return true;
-                    }
                     CharSequence str = getSelectedText();
                     if (str == null) {
                         return true;
@@ -3176,6 +3172,17 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
             }
 
             if (stringBuilder.length() > 0) {
+                ReplaceCopyTextSpannable[] repl = stringBuilder.getSpans(0, stringBuilder.length() - 1, ReplaceCopyTextSpannable.class);
+                if (repl != null && repl.length > 0) {
+                    java.util.Arrays.sort(repl, (a, b) -> stringBuilder.getSpanStart(b) - stringBuilder.getSpanStart(a));
+                    for (ReplaceCopyTextSpannable s : repl) {
+                        final int start = stringBuilder.getSpanStart(s);
+                        final int end = stringBuilder.getSpanEnd(s);
+                        if (start >= 0 && end > start) {
+                            stringBuilder.replace(start, end, s.replacement == null ? "" : s.replacement);
+                        }
+                    }
+                }
                 IgnoreCopySpannable[] spans = stringBuilder.getSpans(0, stringBuilder.length() - 1, IgnoreCopySpannable.class);
                 for (IgnoreCopySpannable span : spans) {
                     int end = stringBuilder.getSpanEnd(span);
@@ -3304,6 +3311,13 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
 
     public static class IgnoreCopySpannable {
 
+    }
+
+    public static class ReplaceCopyTextSpannable {
+        public final CharSequence replacement;
+        public ReplaceCopyTextSpannable(CharSequence replacement) {
+            this.replacement = replacement;
+        }
     }
 
     private static class PathCopyTo extends Path {

@@ -61,13 +61,16 @@ public class NekoConfig {
     public static final int TRANSCRIBE_PREMIUM = 1;
     public static final int TRANSCRIBE_WORKERSAI = 2;
 
+    public static final int CAMERA_FRONT = 0;
+    public static final int CAMERA_REAR = 1;
+    public static final int CAMERA_ASK = 2;
+
     private static final Object sync = new Object();
     public static boolean preferIPv6 = false;
 
     public static boolean useSystemEmoji = false;
     public static boolean ignoreBlocked = false;
     public static boolean hideKeyboardOnChatScroll = false;
-    public static boolean rearVideoMessages = false;
     public static boolean hideAllTab = false;
     public static boolean confirmAVMessage = false;
     public static boolean askBeforeCall = true;
@@ -91,6 +94,7 @@ public class NekoConfig {
     public static int transcribeProvider = TRANSCRIBE_PREMIUM;
     public static String cfAccountID = "";
     public static String cfApiToken = "";
+    public static int cameraInVideoMessages = CAMERA_FRONT;
 
     public static boolean showAddToSavedMessages = true;
     public static boolean showSetReminder = false;
@@ -181,7 +185,6 @@ public class NekoConfig {
             openArchiveOnPull = preferences.getBoolean("openArchiveOnPull", false);
             hideKeyboardOnChatScroll = preferences.getBoolean("hideKeyboardOnChatScroll", false);
             useSystemEmoji = preferences.getBoolean("useSystemEmoji", false);
-            rearVideoMessages = preferences.getBoolean("rearVideoMessages", false);
             hideAllTab = preferences.getBoolean("hideAllTab", false);
             tabsTitleType = preferences.getInt("tabsTitleType2", TITLE_TYPE_MIX);
             confirmAVMessage = preferences.getBoolean("confirmAVMessage", false);
@@ -242,6 +245,7 @@ public class NekoConfig {
             hideBottomNavigationBar = preferences.getBoolean("hideBottomNavigationBar", false);
             bottomFilterTabs = preferences.getBoolean("bottomFilterTabs", false);
             strokeOnViews = preferences.getBoolean("strokeOnViews", true);
+            cameraInVideoMessages = preferences.getInt("cameraInVideoMessages", CAMERA_FRONT);
 
             LensHelper.checkLensSupportAsync();
             preferences.registerOnSharedPreferenceChangeListener(listener);
@@ -304,6 +308,14 @@ public class NekoConfig {
         });
         editor.apply();
         loadConfig(true);
+    }
+
+    public static void setCameraInVideoMessages(int camera) {
+        cameraInVideoMessages = camera;
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("cameraInVideoMessages", cameraInVideoMessages);
+        editor.apply();
     }
 
     public static void setTranscribeProvider(int provider) {
@@ -711,14 +723,6 @@ public class NekoConfig {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("useSystemEmoji", useSystemEmoji);
-        editor.apply();
-    }
-
-    public static void toggleRearVideoMessages() {
-        rearVideoMessages = !rearVideoMessages;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("rearVideoMessages", rearVideoMessages);
         editor.apply();
     }
 

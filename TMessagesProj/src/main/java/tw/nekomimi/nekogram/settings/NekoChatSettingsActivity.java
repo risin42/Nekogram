@@ -71,13 +71,13 @@ public class NekoChatSettingsActivity extends BaseNekoSettingsActivity implement
     private final int markdown2Row = rowId++;
 
     private final int voiceEnhancementsRow = rowId++;
-    private final int rearVideoMessagesRow = rowId++;
     private final int confirmAVRow = rowId++;
     private final int disableProximityEventsRow = rowId++;
     private final int disableVoiceMessageAutoPlayRow = rowId++;
     private final int unmuteVideosWithVolumeButtonsRow = rowId++;
     private final int autoPauseVideoRow = rowId++;
     private final int preferOriginalQualityRow = rowId++;
+    private final int cameraInVideoMessagesRow = rowId++;
 
     private final int messageMenuRow = 100;
 
@@ -187,13 +187,19 @@ public class NekoChatSettingsActivity extends BaseNekoSettingsActivity implement
         if (VoiceEnhancementsHelper.isAvailable()) {
             items.add(UItem.asCheck(voiceEnhancementsRow, LocaleController.getString(R.string.VoiceEnhancements), LocaleController.getString(R.string.VoiceEnhancementsAbout)).slug("voiceEnhancements").setChecked(NekoConfig.voiceEnhancements));
         }
-        items.add(UItem.asCheck(rearVideoMessagesRow, LocaleController.getString(R.string.RearVideoMessages)).slug("rearVideoMessages").setChecked(NekoConfig.rearVideoMessages));
         items.add(UItem.asCheck(confirmAVRow, LocaleController.getString(R.string.ConfirmAVMessage)).slug("confirmAV").setChecked(NekoConfig.confirmAVMessage));
         items.add(UItem.asCheck(disableProximityEventsRow, LocaleController.getString(R.string.DisableProximityEvents)).slug("disableProximityEvents").setChecked(NekoConfig.disableProximityEvents));
         items.add(UItem.asCheck(disableVoiceMessageAutoPlayRow, LocaleController.getString(R.string.DisableVoiceMessagesAutoPlay)).slug("disableVoiceMessageAutoPlay").setChecked(NekoConfig.disableVoiceMessageAutoPlay));
         items.add(UItem.asCheck(unmuteVideosWithVolumeButtonsRow, LocaleController.getString(R.string.UnmuteVideosWithVolumeButtons)).slug("unmuteVideosWithVolumeButtons").setChecked(NekoConfig.unmuteVideosWithVolumeButtons));
         items.add(UItem.asCheck(autoPauseVideoRow, LocaleController.getString(R.string.AutoPauseVideo), LocaleController.getString(R.string.AutoPauseVideoAbout)).slug("autoPauseVideo").setChecked(NekoConfig.autoPauseVideo));
         items.add(UItem.asCheck(preferOriginalQualityRow, LocaleController.getString(R.string.PreferOriginalQuality), LocaleController.getString(R.string.PreferOriginalQualityDesc)).slug("preferOriginalQuality").setChecked(NekoConfig.preferOriginalQuality));
+        items.add(TextSettingsCellFactory.of(cameraInVideoMessagesRow, LocaleController.getString(R.string.CameraInVideoMessages), switch (NekoConfig.cameraInVideoMessages) {
+            case NekoConfig.CAMERA_ASK ->
+                    LocaleController.getString(R.string.AskCamera);
+            case NekoConfig.CAMERA_REAR ->
+                    LocaleController.getString(R.string.RearCamera);
+            default -> LocaleController.getString(R.string.FrontCamera);
+        }).slug("cameraInVideoMessages"));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(LocaleController.getString(R.string.MessageMenu)));
@@ -225,11 +231,20 @@ public class NekoChatSettingsActivity extends BaseNekoSettingsActivity implement
             if (view instanceof TextCheckCell) {
                 ((TextCheckCell) view).setChecked(NekoConfig.hideKeyboardOnChatScroll);
             }
-        } else if (id == rearVideoMessagesRow) {
-            NekoConfig.toggleRearVideoMessages();
-            if (view instanceof TextCheckCell) {
-                ((TextCheckCell) view).setChecked(NekoConfig.rearVideoMessages);
-            }
+        } else if (id == cameraInVideoMessagesRow) {
+            ArrayList<String> arrayList = new ArrayList<>();
+            ArrayList<Integer> types = new ArrayList<>();
+            arrayList.add(LocaleController.getString(R.string.AskCamera));
+            types.add(NekoConfig.CAMERA_ASK);
+            arrayList.add(LocaleController.getString(R.string.RearCamera));
+            types.add(NekoConfig.CAMERA_REAR);
+            arrayList.add(LocaleController.getString(R.string.FrontCamera));
+            types.add(NekoConfig.CAMERA_FRONT);
+            PopupHelper.show(arrayList, LocaleController.getString(R.string.CameraInVideoMessages), types.indexOf(NekoConfig.cameraInVideoMessages), getParentActivity(), view, i -> {
+                NekoConfig.setCameraInVideoMessages(types.get(i));
+                item.textValue = arrayList.get(i);
+                listView.adapter.notifyItemChanged(position, PARTIAL);
+            }, resourcesProvider);
         } else if (id == confirmAVRow) {
             NekoConfig.toggleConfirmAVMessage();
             if (view instanceof TextCheckCell) {

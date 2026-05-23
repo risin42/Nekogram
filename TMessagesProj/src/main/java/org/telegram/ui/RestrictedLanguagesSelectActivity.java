@@ -535,7 +535,7 @@ public class RestrictedLanguagesSelectActivity extends BaseFragment implements N
 
     public static final int LAST_DO_NOT_TRANSLATE_VERSION = 2;
     public static void checkRestrictedLanguages(boolean accountsChanged) {
-        boolean manualChanged = MessagesController.getGlobalMainSettings().getBoolean("translate_button_restricted_languages_changed", false);
+        /*boolean manualChanged = MessagesController.getGlobalMainSettings().getBoolean("translate_button_restricted_languages_changed", false);
         int version = MessagesController.getGlobalMainSettings().getInt("translate_button_restricted_languages_version", 0);
 
         if (version != LAST_DO_NOT_TRANSLATE_VERSION || accountsChanged && !manualChanged) {
@@ -559,7 +559,7 @@ public class RestrictedLanguagesSelectActivity extends BaseFragment implements N
                     } catch (Exception ignore) {}
                 }
             });
-        }
+        }*/
     }
 
     public static void getExtendedDoNotTranslate(Utilities.Callback<HashSet<String>> onDone) {
