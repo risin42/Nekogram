@@ -321,6 +321,10 @@
     <string name="TabsPositionTop">顶部</string>
     <string name="TabsPositionBottom">底部</string>
     <string name="StrokeOnViews">眩光效果</string>
+    <string name="CameraInVideoMessages">视频留言中的摄像头</string>
+    <string name="AskCamera">每次询问</string>
+    <string name="FrontCamera">前置摄像头</string>
+    <string name="RearCamera">后置摄像头</string>
     <!-- Accessibility -->
     <string name="AccessibilitySettings">无障碍设置</string>
 </resources>

@@ -75,6 +75,9 @@ public class NekoSettingsActivity extends BaseNekoSettingsActivity implements Fa
 
     @Override
     public View createView(Context context) {
+        if (parentLayout != null && parentLayout.isRightLayout()) {
+            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+        }
         topView = new FrameLayout(context);
 
         var logoContainer = new FrameLayout(context);

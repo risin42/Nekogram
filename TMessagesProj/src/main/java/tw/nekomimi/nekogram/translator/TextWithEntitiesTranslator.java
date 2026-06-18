@@ -28,10 +28,7 @@ public class TextWithEntitiesTranslator implements Translator.ITranslator {
             var translator = switch (type1) {
                 case Translator.PROVIDER_YANDEX -> YandexTranslator.getInstance();
                 case Translator.PROVIDER_LINGO -> LingoTranslator.getInstance();
-                case Translator.PROVIDER_DEEPL -> {
-                    DeepLTranslator.setFormality(NekoConfig.deepLFormality);
-                    yield DeepLTranslator.getInstance();
-                }
+                case Translator.PROVIDER_DEEPL -> DeepLTranslator.getInstance();
                 case Translator.PROVIDER_MICROSOFT -> MicrosoftTranslator.getInstance();
                 case Translator.PROVIDER_YOUDAO -> YouDaoTranslator.getInstance();
                 case Translator.PROVIDER_BAIDU -> BaiduTranslator.getInstance();

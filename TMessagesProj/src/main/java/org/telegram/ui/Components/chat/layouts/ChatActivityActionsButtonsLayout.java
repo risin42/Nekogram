@@ -215,8 +215,8 @@ public class ChatActivityActionsButtonsLayout extends LinearLayout {
         public TextView textView;
         public ActionBarMenuItem optionsView;
 
-        public BoolAnimator visibilityAnimator = new BoolAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 350, true);
-        public BoolAnimator enabledAnimator = new BoolAnimator(1, this, CubicBezierInterpolator.EASE_OUT_QUINT, 350, true);
+        public BoolAnimator visibilityAnimator = new BoolAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 320, true);
+        public BoolAnimator enabledAnimator = new BoolAnimator(1, this, CubicBezierInterpolator.EASE_OUT_QUINT, 320, true);
 
         @Override
         public void onFactorChanged(int id, float factor, float fraction, FactorAnimator callee) {

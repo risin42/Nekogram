@@ -9,8 +9,11 @@ import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
+import tw.nekomimi.nekogram.Extra;
 import tw.nekomimi.nekogram.NekoConfig;
+import tw.nekomimi.nekogram.helpers.remote.BaseRemoteHelper;
 
 public class InlineBotHelper extends BaseController {
 
@@ -81,6 +84,22 @@ public class InlineBotHelper extends BaseController {
             req.peer = new TLRPC.TL_inputPeerEmpty();
             getConnectionsManager().sendRequest(req, requestDelegate, ConnectionsManager.RequestFlagFailOnServerErrors);
         }
+    }
+
+    public static void queryText(String query, BiConsumer<String, String> callback) {
+        InlineBotHelper.getInstance(UserConfig.selectedAccount).query(Extra.getHelperBot(), query + " " + BaseRemoteHelper.getRequestExtra(), (results, error) -> {
+            if (error != null) {
+                callback.accept(null, error);
+                return;
+            }
+            var result = !results.isEmpty() ? results.get(0) : null;
+            if (result == null) {
+                callback.accept(null, "EMPTY_RESULT");
+                return;
+            }
+            var text = BaseRemoteHelper.getTextFromInlineResult(result);
+            callback.accept(text, null);
+        });
     }
 
     public static String findBotForText(String s) {

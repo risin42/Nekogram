@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -71,6 +72,7 @@ public class NekoEmojiSettingsActivity extends BaseNekoSettingsActivity implemen
         View view = super.createView(context);
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         ActionBarMenu actionMode = actionBar.createActionMode();
+        actionBar.setActionModeColor(Color.TRANSPARENT);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override

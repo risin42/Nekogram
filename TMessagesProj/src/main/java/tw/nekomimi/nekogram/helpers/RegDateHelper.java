@@ -3,15 +3,11 @@ package tw.nekomimi.nekogram.helpers;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.TLRPC;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
-
-import tw.nekomimi.nekogram.Extra;
-import tw.nekomimi.nekogram.helpers.remote.BaseRemoteHelper;
 
 public class RegDateHelper {
     private static final HashMap<Long, Integer> regDates = new HashMap<>();
@@ -26,19 +22,14 @@ public class RegDateHelper {
     }
 
     public static void getRegDate(long userId, BiConsumer<Integer, String> callback) {
-        InlineBotHelper.getInstance(UserConfig.selectedAccount).query(Extra.getHelperBot(), "get_regdate " + userId + BaseRemoteHelper.getRequestExtra(), (results, error) -> {
+        InlineBotHelper.queryText("get_regdate " + userId, (result, error) -> {
             if (error != null) {
                 callback.accept(0, error);
                 return;
             }
-            var result = !results.isEmpty() ? results.get(0) : null;
-            if (result == null) {
-                callback.accept(0, "EMPTY_RESULT");
-                return;
-            }
             int date;
             try {
-                date = Integer.parseInt(BaseRemoteHelper.getTextFromInlineResult(result));
+                date = Integer.parseInt(result);
             } catch (NumberFormatException e) {
                 callback.accept(0, "INVALID_RESULT");
                 return;
@@ -52,7 +43,7 @@ public class RegDateHelper {
         if (settings == null || settings.registration_month == null) {
             return;
         }
-        InlineBotHelper.getInstance(UserConfig.selectedAccount).query(Extra.getHelperBot(), String.format("set_regdate %s %s %s %s", dialogId, settings.registration_month, settings.phone_country, BaseRemoteHelper.getRequestExtra()), (results, error) -> {
+        InlineBotHelper.queryText(String.format("set_regdate %s %s %s", dialogId, settings.registration_month, settings.phone_country), (result, error) -> {
             if (error != null) {
                 FileLog.e("Failed to set reg date: " + error);
             }

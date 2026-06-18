@@ -20,7 +20,6 @@ import androidx.core.app.RemoteInput;
 import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class WearReplyReceiver extends BroadcastReceiver {
 
@@ -32,7 +31,7 @@ public class WearReplyReceiver extends BroadcastReceiver {
             return;
         }
         CharSequence text = remoteInput.getCharSequence(NotificationsController.EXTRA_VOICE_REPLY);
-        Map<String, Uri> remoteInputData = RemoteInput.getDataResultsFromIntent(intent, NotificationsController.EXTRA_VOICE_REPLY);
+        var remoteInputData = RemoteInput.getDataResultsFromIntent(intent, NotificationsController.EXTRA_VOICE_REPLY);
         ArrayList<Uri> images = new ArrayList<>();
         if (remoteInputData != null) images.addAll(remoteInputData.values());
         if (TextUtils.isEmpty(text) && images.isEmpty()) {
@@ -42,6 +41,7 @@ public class WearReplyReceiver extends BroadcastReceiver {
         int maxId = intent.getIntExtra("max_id", 0);
         long topicId = intent.getLongExtra("topic_id", 0);
         int currentAccount = intent.getIntExtra("currentAccount", 0);
+        int[] voiceMsgIds = intent.getIntArrayExtra("voice_msg_ids");
         if (dialogId == 0 || maxId == 0 || !UserConfig.isValidAccount(currentAccount)) {
             return;
         }
@@ -53,7 +53,7 @@ public class WearReplyReceiver extends BroadcastReceiver {
                     TLRPC.User user1 = accountInstance.getMessagesStorage().getUserSync(dialogId);
                     AndroidUtilities.runOnUIThread(() -> {
                         accountInstance.getMessagesController().putUser(user1, true);
-                        sendMessage(accountInstance, text, images, dialogId, topicId, maxId);
+                        sendMessage(accountInstance, text, images, dialogId, topicId, maxId, voiceMsgIds);
                     });
                 });
                 return;
@@ -65,16 +65,16 @@ public class WearReplyReceiver extends BroadcastReceiver {
                     TLRPC.Chat chat1 = accountInstance.getMessagesStorage().getChatSync(-dialogId);
                     AndroidUtilities.runOnUIThread(() -> {
                         accountInstance.getMessagesController().putChat(chat1, true);
-                        sendMessage(accountInstance, text, images, dialogId, topicId, maxId);
+                        sendMessage(accountInstance, text, images, dialogId, topicId, maxId, voiceMsgIds);
                     });
                 });
                 return;
             }
         }
-        sendMessage(accountInstance, text, images, dialogId, topicId, maxId);
+        sendMessage(accountInstance, text, images, dialogId, topicId, maxId, voiceMsgIds);
     }
 
-    private void sendMessage(AccountInstance accountInstance, CharSequence text, ArrayList<Uri> images, long dialog_id, long topicId, int max_id) {
+    private void sendMessage(AccountInstance accountInstance, CharSequence text, ArrayList<Uri> images, long dialog_id, long topicId, int max_id, int[] voiceMsgIds) {
         MessageObject replyToMsgId = null;
         MessageObject replyToTopMsgId = null;
         if (max_id != 0) {
@@ -108,6 +108,13 @@ public class WearReplyReceiver extends BroadcastReceiver {
             }
             SendMessagesHelper.prepareSendingMedia(accountInstance, infos, dialog_id, replyToMsgId, replyToTopMsgId, null, null, false, images.size() > 1, null, true, 0, 0, 0, false, null, null, 0, 0, false, 0, 0, null);
         }
+
+        if (voiceMsgIds != null && voiceMsgIds.length > 0) {
+            ArrayList<Integer> ids = new ArrayList<>(voiceMsgIds.length);
+            for (int id : voiceMsgIds) ids.add(id);
+            accountInstance.getMessagesStorage().markVoiceMessageContentAsRead(dialog_id, ids);
+        }
+
         //TODO handle topics
         if (topicId == 0) {
             accountInstance.getMessagesController().markDialogAsRead(dialog_id, max_id, max_id, 0, false, topicId, 0, true, 0);

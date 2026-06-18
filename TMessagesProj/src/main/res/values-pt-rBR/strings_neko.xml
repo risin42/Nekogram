@@ -317,6 +317,14 @@
     <string name="TranslationKeepFormatting">Preservar a formatação do texto na tradução</string>
     <string name="PredictiveBackAnimation">Animação do gesto de volta preditivo</string>
     <string name="HideBottomNavigationBar">Ocultar barra de navegação inferior</string>
+    <string name="TabsPosition">Posição das abas</string>
+    <string name="TabsPositionTop">Principal</string>
+    <string name="TabsPositionBottom">Fundo</string>
+    <string name="StrokeOnViews">Efeitos de brilho</string>
+    <string name="CameraInVideoMessages">Câmera em mensagens de vídeo</string>
+    <string name="AskCamera">Pergunte sempre</string>
+    <string name="FrontCamera">Câmera frontal</string>
+    <string name="RearCamera">Câmera traseira</string>
     <!-- Accessibility -->
     <string name="AccessibilitySettings">Opções de acessibilidade</string>
 </resources>

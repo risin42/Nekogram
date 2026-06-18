@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="NekoSettings">Cài đặt Neko</string>
-    <string name="PreferIPv6">Ưu tiên nối qua IPv6</string>
+    <string name="PreferIPv6">Ưu tiên kết nối qua IPv6</string>
     <string name="MessageMenu">Menu tin nhắn</string>
     <string name="HidePhone">Ẩn số điện thoại của tôi</string>
     <string name="DeleteAllFromSelf">Xóa tin nhắn của chính bạn</string>
@@ -320,6 +320,10 @@
     <string name="TabsPositionTop">Trên cùng</string>
     <string name="TabsPositionBottom">Dưới cùng</string>
     <string name="StrokeOnViews">Hiệu ứng chói sáng</string>
+    <string name="CameraInVideoMessages">Camera trong Tin nhắn Video</string>
+    <string name="AskCamera">Hỏi mỗi lần</string>
+    <string name="FrontCamera">Camera trước</string>
+    <string name="RearCamera">Camera sau</string>
     <!-- Accessibility -->
     <string name="AccessibilitySettings">Cài đặt trợ năng</string>
 </resources>

@@ -125,6 +125,10 @@ public class VideoAds {
         return ads;
     }
 
+    public static void dropCache() {
+        cached.clear();
+    }
+
     private VideoAds(
         int currentAccount,
         long dialogId,
