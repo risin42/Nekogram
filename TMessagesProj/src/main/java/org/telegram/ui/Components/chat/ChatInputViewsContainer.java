@@ -74,7 +74,8 @@ public class ChatInputViewsContainer extends FrameLayout {
 
 
 
-    private BlurredBackgroundDrawable blurredBackgroundDrawable;
+    public boolean drawInputBackground = true;
+    public BlurredBackgroundDrawable blurredBackgroundDrawable;
     private BlurredBackgroundDrawable underKeyboardBackgroundDrawable;
     public void setInputIslandBubbleDrawable(BlurredBackgroundDrawable drawable) {
         blurredBackgroundDrawable = drawable;
@@ -269,7 +270,8 @@ public class ChatInputViewsContainer extends FrameLayout {
         tmpRect.offset(0, blurTop + (int) bubbleInputTranlationY);
 
         blurredBackgroundDrawable.setBounds(tmpRect);
-        blurredBackgroundDrawable.draw(canvas);
+        if (drawInputBackground)
+            blurredBackgroundDrawable.draw(canvas);
 
         if (needDrawInAppKeyboard) {
             underKeyboardBackgroundDrawable.draw(canvas);

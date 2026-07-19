@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Set;
 
 import tw.nekomimi.nekogram.DatacenterPopupWrapper;
+import tw.nekomimi.nekogram.tlv.TlViewer;
 
 public class PopupHelper {
 
@@ -124,9 +125,25 @@ public class PopupHelper {
                 RegDateHelper.getRegDate(userId, (date, error) -> subItem.setSubtext(RegDateHelper.formatRegDate(date, error), true));
             }
         }
+        if (did != 0) {
+            ActionBarMenuSubItem subItem = ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_stories_caption, LocaleController.getString(R.string.ViewAsJson), false, fragment.getResourceProvider());
+            subItem.setOnClickListener(v -> {
+                popupWindow.dismiss();
+                var messagesController = fragment.getMessagesController();
+                var peer = did > 0 ? messagesController.getUser(did) : messagesController.getChat(-did);
+                var peerFull = did > 0 ? messagesController.getUserFull(did) : messagesController.getChatFull(-did);
+                if (peer == null) {
+                    return;
+                }
+                if (peerFull == null) {
+                    TlViewer.openTlViewer(fragment, peer);
+                } else {
+                    TlViewer.openTlViewer(fragment, peer, peerFull);
+                }
+            });
+        }
         popupLayout.setParentWindow(popupWindow);
     }
-
 
     public static void showCopyPopup(BaseFragment fragment, CharSequence title, View anchorView, float x, float y, Runnable callback) {
         Context context = fragment.getParentActivity();

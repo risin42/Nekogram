@@ -3,22 +3,19 @@ package tw.nekomimi.nekogram;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.ToNumberPolicy;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
-import org.telegram.messenger.FileLog;
 import org.telegram.ui.ActionBar.Theme;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 import tw.nekomimi.nekogram.helpers.CloudSettingsHelper;
 import tw.nekomimi.nekogram.helpers.LensHelper;
@@ -65,90 +62,93 @@ public class NekoConfig {
     public static final int CAMERA_ASK = 2;
 
     private static final Object sync = new Object();
-    public static boolean preferIPv6 = false;
 
-    public static boolean useSystemEmoji = false;
-    public static boolean ignoreBlocked = false;
-    public static boolean hideKeyboardOnChatScroll = false;
-    public static boolean hideAllTab = false;
-    public static boolean confirmAVMessage = false;
-    public static boolean askBeforeCall = true;
-    public static boolean disableNumberRounding = false;
-    public static boolean disableGreetingSticker = false;
-    public static boolean autoTranslate = true;
-    public static boolean showRPCError = false;
-    public static float stickerSize = 14.0f;
-    public static String translationProvider = Translator.PROVIDER_GOOGLE;
-    public static String translationTarget = "app";
-    public static int tabsTitleType = TITLE_TYPE_MIX;
-    public static int idType = ID_TYPE_API;
-    public static int maxRecentStickers = 20;
-    public static int transType = TRANS_TYPE_NEKO;
+    public static int cameraInVideoMessages = CAMERA_FRONT;
     public static int doubleTapInAction = DOUBLE_TAP_ACTION_REACTION;
     public static int doubleTapOutAction = DOUBLE_TAP_ACTION_REACTION;
     public static int downloadSpeedBoost = BOOST_NONE;
-    public static Set<String> restrictedLanguages;
-    public static String externalTranslationProvider;
-    public static int transcribeProvider = TRANSCRIBE_PREMIUM;
-    public static String cfAccountID = "";
-    public static String cfApiToken = "";
-    public static int cameraInVideoMessages = CAMERA_FRONT;
-
-    public static boolean showAddToSavedMessages = true;
-    public static boolean showSetReminder = false;
-    public static boolean showReport = false;
-    public static boolean showPrPr = false;
-    public static boolean showDeleteDownloadedFile = false;
-    public static boolean showMessageDetails = false;
-    public static boolean showTranslate = true;
-    public static boolean showRepeat = true;
-    public static boolean showNoQuoteForward = false;
-    public static boolean showCopyPhoto = false;
-    public static boolean showQrCode = false;
-    public static boolean showOpenIn = false;
-
-    public static int tabletMode = TABLET_AUTO;
-    public static boolean openArchiveOnPull = false;
+    public static int idType = ID_TYPE_API;
+    public static int maxRecentStickers = 20;
     public static int nameOrder = 1;
-    public static boolean disableAppBarShadow = false;
-    public static boolean mediaPreview = true;
-    public static boolean autoPauseVideo = true;
-    public static boolean disableProximityEvents = false;
-    public static boolean mapDriftingFix = false;
-    public static boolean voiceEnhancements = false;
-    public static boolean disableInstantCamera = false;
-    public static boolean tryToOpenAllLinksInIV = false;
-    public static boolean formatTimeWithSeconds = false;
+    public static int tabletMode = TABLET_AUTO;
+    public static int tabsTitleType = TITLE_TYPE_MIX;
+    public static int transcribeProvider = TRANSCRIBE_PREMIUM;
+    public static int transType = TRANS_TYPE_NEKO;
+
+    public static float stickerSize = 14.0f;
+
     public static boolean accentAsNotificationColor = false;
-    public static boolean silenceNonContacts = false;
+    public static boolean askBeforeCall = true;
+    public static boolean autoInlineBot = false;
+    public static boolean autoPauseVideo = true;
+    public static boolean autoTranslate = true;
+    public static boolean bottomFilterTabs = false;
+    public static boolean confirmAVMessage = false;
+    public static boolean disableAppBarShadow = false;
+    public static boolean disableGreetingSticker = false;
+    public static boolean disableInstantCamera = false;
     public static boolean disableJumpToNextChannel = false;
-    public static boolean disableVoiceMessageAutoPlay = false;
-    public static boolean unmuteVideosWithVolumeButtons = true;
     public static boolean disableMarkdownByDefault = false;
-    public static boolean hideTimeOnSticker = false;
-    public static boolean showOriginal = true;
-    public static boolean newMarkdownParser = true;
-    public static boolean markdownParseLinks = true;
+    public static boolean disableNumberRounding = false;
+    public static boolean disableProximityEvents = false;
+    public static boolean disableVoiceMessageAutoPlay = false;
+    public static boolean forceFontWeightFallback = false;
+    public static boolean formatTimeWithSeconds = false;
+    public static boolean gooeyAvatarAnimation = true;
+    public static boolean hideAllTab = false;
+    public static boolean hideBottomNavigationBar = false;
+    public static boolean hideChannelBottomButtons = false;
+    public static boolean hideKeyboardOnChatScroll = false;
     public static boolean hideStories = false;
+    public static boolean hideTimeOnSticker = false;
+    public static boolean ignoreBlocked = false;
+    public static boolean ignoreContentRestriction = false;
+    public static boolean keepFormatting = true;
+    public static boolean mapDriftingFix = false;
+    public static boolean markdownParseLinks = true;
+    public static boolean mediaPreview = true;
+    public static boolean minimizedStickerCreator = false;
+    public static boolean newMarkdownParser = true;
+    public static boolean openArchiveOnPull = false;
+    public static boolean predictiveBackAnimation = true;
+    public static boolean preferIPv6 = false;
+    public static boolean preferOriginalQuality = false;
     public static boolean quickForward = false;
     public static boolean reducedColors = false;
-    public static boolean ignoreContentRestriction = false;
-    public static boolean showTimeHint = false;
-    public static boolean preferOriginalQuality = false;
-    public static boolean autoInlineBot = false;
-    public static boolean forceFontWeightFallback = false;
-    public static boolean minimizedStickerCreator = false;
-    public static boolean hideChannelBottomButtons = false;
-    public static boolean keepFormatting = true;
-    public static boolean predictiveBackAnimation = false;
-    public static boolean hideBottomNavigationBar = false;
-    public static boolean bottomFilterTabs = false;
-    public static boolean strokeOnViews = true;
-
     public static boolean shouldNOTTrustMe = false;
+    public static boolean showAddToSavedMessages = true;
+    public static boolean showCopyPhoto = false;
+    public static boolean showDeleteDownloadedFile = false;
+    public static boolean showMessageDetails = false;
+    public static boolean showNoQuoteForward = false;
+    public static boolean showOpenIn = false;
+    public static boolean showOriginal = true;
+    public static boolean showPrPr = false;
+    public static boolean showQrCode = false;
+    public static boolean showRepeat = true;
+    public static boolean showReport = false;
+    public static boolean showRPCError = false;
+    public static boolean showSetReminder = false;
+    public static boolean showTimeHint = false;
+    public static boolean showTranslate = true;
+    public static boolean silenceNonContacts = false;
+    public static boolean strokeOnViews = true;
+    public static boolean tryToOpenAllLinksInIV = false;
+    public static boolean unmuteVideosWithVolumeButtons = true;
+    public static boolean useSystemEmoji = false;
+    public static boolean voiceEnhancements = false;
+
+    public static String cfAccountID = "";
+    public static String cfApiToken = "";
+    public static String externalTranslationProvider;
+    public static String translationProvider = Translator.PROVIDER_GOOGLE;
+    public static String translationTarget = "app";
+
+    public static Set<String> restrictedLanguages;
 
     public static int userMcc = 0;
 
+    private static final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
     private static final SharedPreferences.OnSharedPreferenceChangeListener listener = (preferences, key) -> {
         CloudSettingsHelper.getInstance().doAutoSync();
     };
@@ -165,86 +165,86 @@ public class NekoConfig {
             }
             userMcc = ApplicationLoader.applicationContext.getResources().getConfiguration().mcc;
 
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-            preferIPv6 = preferences.getBoolean("preferIPv6", false);
-            ignoreBlocked = preferences.getBoolean("ignoreBlocked2", false);
-            tabletMode = preferences.getInt("tabletMode", TABLET_AUTO);
-            nameOrder = preferences.getInt("nameOrder", 1);
-            showAddToSavedMessages = preferences.getBoolean("showAddToSavedMessages", true);
-            showSetReminder = preferences.getBoolean("showSetReminder", false);
-            showReport = preferences.getBoolean("showReport", false);
-            showPrPr = preferences.getBoolean("showPrPr", false);
-            showDeleteDownloadedFile = preferences.getBoolean("showDeleteDownloadedFile", false);
-            showMessageDetails = preferences.getBoolean("showMessageDetails", false);
-            showTranslate = preferences.getBoolean("showTranslate", true);
-            showRepeat = preferences.getBoolean("showRepeat", true);
-            stickerSize = preferences.getFloat("stickerSize", 14.0f);
-            translationProvider = preferences.getString("translationProvider2", Translator.PROVIDER_GOOGLE);
-            openArchiveOnPull = preferences.getBoolean("openArchiveOnPull", false);
-            hideKeyboardOnChatScroll = preferences.getBoolean("hideKeyboardOnChatScroll", false);
-            useSystemEmoji = preferences.getBoolean("useSystemEmoji", false);
-            hideAllTab = preferences.getBoolean("hideAllTab", false);
-            tabsTitleType = preferences.getInt("tabsTitleType2", TITLE_TYPE_MIX);
-            confirmAVMessage = preferences.getBoolean("confirmAVMessage", false);
-            askBeforeCall = preferences.getBoolean("askBeforeCall", true);
-            shouldNOTTrustMe = preferences.getBoolean("shouldNOTTrustMe", false);
-            disableNumberRounding = preferences.getBoolean("disableNumberRounding", false);
-            disableAppBarShadow = preferences.getBoolean("disableAppBarShadow", false);
-            mediaPreview = preferences.getBoolean("mediaPreview", true);
-            idType = preferences.getInt("idType", ID_TYPE_API);
-            autoPauseVideo = preferences.getBoolean("autoPauseVideo", true);
-            disableProximityEvents = preferences.getBoolean("disableProximityEvents", false);
-            mapDriftingFix = preferences.getBoolean("mapDriftingFix", userMcc == 460);
-            voiceEnhancements = preferences.getBoolean("voiceEnhancements", false);
-            disableInstantCamera = preferences.getBoolean("disableInstantCamera", false);
-            tryToOpenAllLinksInIV = preferences.getBoolean("tryToOpenAllLinksInIV", false);
-            formatTimeWithSeconds = preferences.getBoolean("formatTimeWithSeconds", false);
-            accentAsNotificationColor = preferences.getBoolean("accentAsNotificationColor", false);
-            silenceNonContacts = preferences.getBoolean("silenceNonContacts", false);
-            showNoQuoteForward = preferences.getBoolean("showNoQuoteForward", false);
-            translationTarget = preferences.getString("translationTarget", "app");
-            maxRecentStickers = preferences.getInt("maxRecentStickers", 20);
-            disableJumpToNextChannel = preferences.getBoolean("disableJumpToNextChannel", false);
-            disableGreetingSticker = preferences.getBoolean("disableGreetingSticker", false);
-            autoTranslate = preferences.getBoolean("autoTranslate", true);
-            disableVoiceMessageAutoPlay = preferences.getBoolean("disableVoiceMessageAutoPlay", false);
-            unmuteVideosWithVolumeButtons = preferences.getBoolean("unmuteVideosWithVolumeButtons", true);
-            transType = preferences.getInt("transType", TRANS_TYPE_NEKO);
-            showCopyPhoto = preferences.getBoolean("showCopyPhoto", false);
+            cameraInVideoMessages = preferences.getInt("cameraInVideoMessages", CAMERA_FRONT);
             doubleTapInAction = preferences.getInt("doubleTapAction", DOUBLE_TAP_ACTION_REACTION);
-            doubleTapOutAction = preferences.getInt("doubleTapOutAction", doubleTapInAction);
-            restrictedLanguages = preferences.getStringSet("restrictedLanguages", null);
-            disableMarkdownByDefault = preferences.getBoolean("disableMarkdownByDefault", false);
-            showRPCError = preferences.getBoolean("showRPCError", false);
-            hideTimeOnSticker = preferences.getBoolean("hideTimeOnSticker", false);
-            showOriginal = preferences.getBoolean("showOriginal", true);
-            newMarkdownParser = preferences.getBoolean("newMarkdownParser", true);
-            markdownParseLinks = preferences.getBoolean("markdownParseLinks", true);
+            doubleTapOutAction = preferences.getInt("doubleTapOutAction", DOUBLE_TAP_ACTION_REACTION);
             downloadSpeedBoost = preferences.getInt("downloadSpeedBoost2", BOOST_NONE);
-            showQrCode = preferences.getBoolean("showQrCode", false);
-            showOpenIn = preferences.getBoolean("showOpenIn", false);
+            idType = preferences.getInt("idType", ID_TYPE_API);
+            maxRecentStickers = preferences.getInt("maxRecentStickers", 20);
+            nameOrder = preferences.getInt("nameOrder", 1);
+            tabletMode = preferences.getInt("tabletMode", TABLET_AUTO);
+            tabsTitleType = preferences.getInt("tabsTitleType2", TITLE_TYPE_MIX);
+            transcribeProvider = preferences.getInt("transcribeProvider", TRANSCRIBE_PREMIUM);
+            transType = preferences.getInt("transType", TRANS_TYPE_NEKO);
+            stickerSize = preferences.getFloat("stickerSize", 14.0f);
+            accentAsNotificationColor = preferences.getBoolean("accentAsNotificationColor", false);
+            askBeforeCall = preferences.getBoolean("askBeforeCall", true);
+            autoInlineBot = preferences.getBoolean("autoInlineBot", false);
+            autoPauseVideo = preferences.getBoolean("autoPauseVideo", true);
+            autoTranslate = preferences.getBoolean("autoTranslate", true);
+            bottomFilterTabs = preferences.getBoolean("bottomFilterTabs", false);
+            confirmAVMessage = preferences.getBoolean("confirmAVMessage", false);
+            disableAppBarShadow = preferences.getBoolean("disableAppBarShadow", false);
+            disableGreetingSticker = preferences.getBoolean("disableGreetingSticker", false);
+            disableInstantCamera = preferences.getBoolean("disableInstantCamera", false);
+            disableJumpToNextChannel = preferences.getBoolean("disableJumpToNextChannel", false);
+            disableMarkdownByDefault = preferences.getBoolean("disableMarkdownByDefault", false);
+            disableNumberRounding = preferences.getBoolean("disableNumberRounding", false);
+            disableProximityEvents = preferences.getBoolean("disableProximityEvents", false);
+            disableVoiceMessageAutoPlay = preferences.getBoolean("disableVoiceMessageAutoPlay", false);
+            forceFontWeightFallback = preferences.getBoolean("forceFontWeightFallback", false);
+            formatTimeWithSeconds = preferences.getBoolean("formatTimeWithSeconds", false);
+            gooeyAvatarAnimation = preferences.getBoolean("gooeyAvatarAnimation", true);
+            hideAllTab = preferences.getBoolean("hideAllTab", false);
+            hideBottomNavigationBar = preferences.getBoolean("hideBottomNavigationBar", false);
+            hideChannelBottomButtons = preferences.getBoolean("hideChannelBottomButtons", false);
+            hideKeyboardOnChatScroll = preferences.getBoolean("hideKeyboardOnChatScroll", false);
             hideStories = preferences.getBoolean("hideStories", false);
+            hideTimeOnSticker = preferences.getBoolean("hideTimeOnSticker", false);
+            ignoreBlocked = preferences.getBoolean("ignoreBlocked2", false);
+            ignoreContentRestriction = preferences.getBoolean("ignoreContentRestriction", false);
+            keepFormatting = preferences.getBoolean("keepFormatting", true);
+            mapDriftingFix = preferences.getBoolean("mapDriftingFix", userMcc == 460);
+            markdownParseLinks = preferences.getBoolean("markdownParseLinks", true);
+            mediaPreview = preferences.getBoolean("mediaPreview", true);
+            minimizedStickerCreator = preferences.getBoolean("minimizedStickerCreator", false);
+            newMarkdownParser = preferences.getBoolean("newMarkdownParser", true);
+            openArchiveOnPull = preferences.getBoolean("openArchiveOnPull", false);
+            predictiveBackAnimation = preferences.getBoolean("predictiveBackAnimation", true);
+            preferIPv6 = preferences.getBoolean("preferIPv6", false);
+            preferOriginalQuality = preferences.getBoolean("preferOriginalQuality", false);
             quickForward = preferences.getBoolean("quickForward", false);
             reducedColors = preferences.getBoolean("reducedColors", false);
-            ignoreContentRestriction = preferences.getBoolean("ignoreContentRestriction", false);
-            externalTranslationProvider = preferences.getString("externalTranslationProvider", "");
-            TranslatorApps.loadTranslatorAppsAsync();
+            shouldNOTTrustMe = preferences.getBoolean("shouldNOTTrustMe", false);
+            showAddToSavedMessages = preferences.getBoolean("showAddToSavedMessages", true);
+            showCopyPhoto = preferences.getBoolean("showCopyPhoto", false);
+            showDeleteDownloadedFile = preferences.getBoolean("showDeleteDownloadedFile", false);
+            showMessageDetails = preferences.getBoolean("showMessageDetails", false);
+            showNoQuoteForward = preferences.getBoolean("showNoQuoteForward", false);
+            showOpenIn = preferences.getBoolean("showOpenIn", false);
+            showOriginal = preferences.getBoolean("showOriginal", true);
+            showPrPr = preferences.getBoolean("showPrPr", false);
+            showQrCode = preferences.getBoolean("showQrCode", false);
+            showRepeat = preferences.getBoolean("showRepeat", true);
+            showReport = preferences.getBoolean("showReport", false);
+            showRPCError = preferences.getBoolean("showRPCError", false);
+            showSetReminder = preferences.getBoolean("showSetReminder", false);
             showTimeHint = preferences.getBoolean("showTimeHint", false);
-            transcribeProvider = preferences.getInt("transcribeProvider", TRANSCRIBE_PREMIUM);
+            showTranslate = preferences.getBoolean("showTranslate", true);
+            silenceNonContacts = preferences.getBoolean("silenceNonContacts", false);
+            strokeOnViews = preferences.getBoolean("strokeOnViews", true);
+            tryToOpenAllLinksInIV = preferences.getBoolean("tryToOpenAllLinksInIV", false);
+            unmuteVideosWithVolumeButtons = preferences.getBoolean("unmuteVideosWithVolumeButtons", true);
+            useSystemEmoji = preferences.getBoolean("useSystemEmoji", false);
+            voiceEnhancements = preferences.getBoolean("voiceEnhancements", false);
             cfAccountID = preferences.getString("cfAccountID", "");
             cfApiToken = preferences.getString("cfApiToken", "");
-            preferOriginalQuality = preferences.getBoolean("preferOriginalQuality", false);
-            autoInlineBot = preferences.getBoolean("autoInlineBot", false);
-            forceFontWeightFallback = preferences.getBoolean("forceFontWeightFallback", false);
-            minimizedStickerCreator = preferences.getBoolean("minimizedStickerCreator", false);
-            hideChannelBottomButtons = preferences.getBoolean("hideChannelBottomButtons", false);
-            keepFormatting = preferences.getBoolean("keepFormatting", true);
-            predictiveBackAnimation = preferences.getBoolean("predictiveBackAnimation", false);
-            hideBottomNavigationBar = preferences.getBoolean("hideBottomNavigationBar", false);
-            bottomFilterTabs = preferences.getBoolean("bottomFilterTabs", false);
-            strokeOnViews = preferences.getBoolean("strokeOnViews", true);
-            cameraInVideoMessages = preferences.getInt("cameraInVideoMessages", CAMERA_FRONT);
+            externalTranslationProvider = preferences.getString("externalTranslationProvider", null);
+            translationProvider = preferences.getString("translationProvider2", Translator.PROVIDER_GOOGLE);
+            translationTarget = preferences.getString("translationTarget", "app");
+            restrictedLanguages = preferences.getStringSet("restrictedLanguages", null);
 
+            TranslatorApps.loadTranslatorAppsAsync();
             LensHelper.checkLensSupportAsync();
             preferences.registerOnSharedPreferenceChangeListener(listener);
 
@@ -252,668 +252,891 @@ public class NekoConfig {
         }
     }
 
-    private static Gson gson;
-
     public static String exportConfigs() {
-        if (gson == null) {
-            gson = new GsonBuilder()
-                    .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
-                    .create();
+        var object = new JsonObject();
+        if (preferences.contains("cameraInVideoMessages")) {
+            object.addProperty("cameraInVideoMessages", preferences.getInt("cameraInVideoMessages", CAMERA_FRONT));
         }
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        return gson.toJson(preferences.getAll());
+        if (preferences.contains("doubleTapAction")) {
+            object.addProperty("doubleTapAction", preferences.getInt("doubleTapAction", DOUBLE_TAP_ACTION_REACTION));
+        }
+        if (preferences.contains("doubleTapOutAction")) {
+            object.addProperty("doubleTapOutAction", preferences.getInt("doubleTapOutAction", DOUBLE_TAP_ACTION_REACTION));
+        }
+        if (preferences.contains("downloadSpeedBoost2")) {
+            object.addProperty("downloadSpeedBoost2", preferences.getInt("downloadSpeedBoost2", BOOST_NONE));
+        }
+        if (preferences.contains("idType")) {
+            object.addProperty("idType", preferences.getInt("idType", ID_TYPE_API));
+        }
+        if (preferences.contains("maxRecentStickers")) {
+            object.addProperty("maxRecentStickers", preferences.getInt("maxRecentStickers", 20));
+        }
+        if (preferences.contains("nameOrder")) {
+            object.addProperty("nameOrder", preferences.getInt("nameOrder", 1));
+        }
+        if (preferences.contains("tabletMode")) {
+            object.addProperty("tabletMode", preferences.getInt("tabletMode", TABLET_AUTO));
+        }
+        if (preferences.contains("tabsTitleType2")) {
+            object.addProperty("tabsTitleType2", preferences.getInt("tabsTitleType2", TITLE_TYPE_MIX));
+        }
+        if (preferences.contains("transcribeProvider")) {
+            object.addProperty("transcribeProvider", preferences.getInt("transcribeProvider", TRANSCRIBE_PREMIUM));
+        }
+        if (preferences.contains("transType")) {
+            object.addProperty("transType", preferences.getInt("transType", TRANS_TYPE_NEKO));
+        }
+        if (preferences.contains("stickerSize")) {
+            object.addProperty("stickerSize", preferences.getFloat("stickerSize", 14.0f));
+        }
+        if (preferences.contains("accentAsNotificationColor")) {
+            object.addProperty("accentAsNotificationColor", preferences.getBoolean("accentAsNotificationColor", false));
+        }
+        if (preferences.contains("askBeforeCall")) {
+            object.addProperty("askBeforeCall", preferences.getBoolean("askBeforeCall", true));
+        }
+        if (preferences.contains("autoInlineBot")) {
+            object.addProperty("autoInlineBot", preferences.getBoolean("autoInlineBot", false));
+        }
+        if (preferences.contains("autoPauseVideo")) {
+            object.addProperty("autoPauseVideo", preferences.getBoolean("autoPauseVideo", true));
+        }
+        if (preferences.contains("autoTranslate")) {
+            object.addProperty("autoTranslate", preferences.getBoolean("autoTranslate", true));
+        }
+        if (preferences.contains("bottomFilterTabs")) {
+            object.addProperty("bottomFilterTabs", preferences.getBoolean("bottomFilterTabs", false));
+        }
+        if (preferences.contains("confirmAVMessage")) {
+            object.addProperty("confirmAVMessage", preferences.getBoolean("confirmAVMessage", false));
+        }
+        if (preferences.contains("disableAppBarShadow")) {
+            object.addProperty("disableAppBarShadow", preferences.getBoolean("disableAppBarShadow", false));
+        }
+        if (preferences.contains("disableGreetingSticker")) {
+            object.addProperty("disableGreetingSticker", preferences.getBoolean("disableGreetingSticker", false));
+        }
+        if (preferences.contains("disableInstantCamera")) {
+            object.addProperty("disableInstantCamera", preferences.getBoolean("disableInstantCamera", false));
+        }
+        if (preferences.contains("disableJumpToNextChannel")) {
+            object.addProperty("disableJumpToNextChannel", preferences.getBoolean("disableJumpToNextChannel", false));
+        }
+        if (preferences.contains("disableMarkdownByDefault")) {
+            object.addProperty("disableMarkdownByDefault", preferences.getBoolean("disableMarkdownByDefault", false));
+        }
+        if (preferences.contains("disableNumberRounding")) {
+            object.addProperty("disableNumberRounding", preferences.getBoolean("disableNumberRounding", false));
+        }
+        if (preferences.contains("disableProximityEvents")) {
+            object.addProperty("disableProximityEvents", preferences.getBoolean("disableProximityEvents", false));
+        }
+        if (preferences.contains("disableVoiceMessageAutoPlay")) {
+            object.addProperty("disableVoiceMessageAutoPlay", preferences.getBoolean("disableVoiceMessageAutoPlay", false));
+        }
+        if (preferences.contains("forceFontWeightFallback")) {
+            object.addProperty("forceFontWeightFallback", preferences.getBoolean("forceFontWeightFallback", false));
+        }
+        if (preferences.contains("formatTimeWithSeconds")) {
+            object.addProperty("formatTimeWithSeconds", preferences.getBoolean("formatTimeWithSeconds", false));
+        }
+        if (preferences.contains("gooeyAvatarAnimation")) {
+            object.addProperty("gooeyAvatarAnimation", preferences.getBoolean("gooeyAvatarAnimation", true));
+        }
+        if (preferences.contains("hideAllTab")) {
+            object.addProperty("hideAllTab", preferences.getBoolean("hideAllTab", false));
+        }
+        if (preferences.contains("hideBottomNavigationBar")) {
+            object.addProperty("hideBottomNavigationBar", preferences.getBoolean("hideBottomNavigationBar", false));
+        }
+        if (preferences.contains("hideChannelBottomButtons")) {
+            object.addProperty("hideChannelBottomButtons", preferences.getBoolean("hideChannelBottomButtons", false));
+        }
+        if (preferences.contains("hideKeyboardOnChatScroll")) {
+            object.addProperty("hideKeyboardOnChatScroll", preferences.getBoolean("hideKeyboardOnChatScroll", false));
+        }
+        if (preferences.contains("hideStories")) {
+            object.addProperty("hideStories", preferences.getBoolean("hideStories", false));
+        }
+        if (preferences.contains("hideTimeOnSticker")) {
+            object.addProperty("hideTimeOnSticker", preferences.getBoolean("hideTimeOnSticker", false));
+        }
+        if (preferences.contains("ignoreBlocked2")) {
+            object.addProperty("ignoreBlocked2", preferences.getBoolean("ignoreBlocked2", false));
+        }
+        if (preferences.contains("ignoreContentRestriction")) {
+            object.addProperty("ignoreContentRestriction", preferences.getBoolean("ignoreContentRestriction", false));
+        }
+        if (preferences.contains("keepFormatting")) {
+            object.addProperty("keepFormatting", preferences.getBoolean("keepFormatting", true));
+        }
+        if (preferences.contains("mapDriftingFix")) {
+            object.addProperty("mapDriftingFix", preferences.getBoolean("mapDriftingFix", false));
+        }
+        if (preferences.contains("markdownParseLinks")) {
+            object.addProperty("markdownParseLinks", preferences.getBoolean("markdownParseLinks", true));
+        }
+        if (preferences.contains("mediaPreview")) {
+            object.addProperty("mediaPreview", preferences.getBoolean("mediaPreview", true));
+        }
+        if (preferences.contains("minimizedStickerCreator")) {
+            object.addProperty("minimizedStickerCreator", preferences.getBoolean("minimizedStickerCreator", false));
+        }
+        if (preferences.contains("newMarkdownParser")) {
+            object.addProperty("newMarkdownParser", preferences.getBoolean("newMarkdownParser", true));
+        }
+        if (preferences.contains("openArchiveOnPull")) {
+            object.addProperty("openArchiveOnPull", preferences.getBoolean("openArchiveOnPull", false));
+        }
+        if (preferences.contains("predictiveBackAnimation")) {
+            object.addProperty("predictiveBackAnimation", preferences.getBoolean("predictiveBackAnimation", true));
+        }
+        if (preferences.contains("preferIPv6")) {
+            object.addProperty("preferIPv6", preferences.getBoolean("preferIPv6", false));
+        }
+        if (preferences.contains("preferOriginalQuality")) {
+            object.addProperty("preferOriginalQuality", preferences.getBoolean("preferOriginalQuality", false));
+        }
+        if (preferences.contains("quickForward")) {
+            object.addProperty("quickForward", preferences.getBoolean("quickForward", false));
+        }
+        if (preferences.contains("reducedColors")) {
+            object.addProperty("reducedColors", preferences.getBoolean("reducedColors", false));
+        }
+        if (preferences.contains("shouldNOTTrustMe")) {
+            object.addProperty("shouldNOTTrustMe", preferences.getBoolean("shouldNOTTrustMe", false));
+        }
+        if (preferences.contains("showAddToSavedMessages")) {
+            object.addProperty("showAddToSavedMessages", preferences.getBoolean("showAddToSavedMessages", true));
+        }
+        if (preferences.contains("showCopyPhoto")) {
+            object.addProperty("showCopyPhoto", preferences.getBoolean("showCopyPhoto", false));
+        }
+        if (preferences.contains("showDeleteDownloadedFile")) {
+            object.addProperty("showDeleteDownloadedFile", preferences.getBoolean("showDeleteDownloadedFile", false));
+        }
+        if (preferences.contains("showMessageDetails")) {
+            object.addProperty("showMessageDetails", preferences.getBoolean("showMessageDetails", false));
+        }
+        if (preferences.contains("showNoQuoteForward")) {
+            object.addProperty("showNoQuoteForward", preferences.getBoolean("showNoQuoteForward", false));
+        }
+        if (preferences.contains("showOpenIn")) {
+            object.addProperty("showOpenIn", preferences.getBoolean("showOpenIn", false));
+        }
+        if (preferences.contains("showOriginal")) {
+            object.addProperty("showOriginal", preferences.getBoolean("showOriginal", true));
+        }
+        if (preferences.contains("showPrPr")) {
+            object.addProperty("showPrPr", preferences.getBoolean("showPrPr", false));
+        }
+        if (preferences.contains("showQrCode")) {
+            object.addProperty("showQrCode", preferences.getBoolean("showQrCode", false));
+        }
+        if (preferences.contains("showRepeat")) {
+            object.addProperty("showRepeat", preferences.getBoolean("showRepeat", true));
+        }
+        if (preferences.contains("showReport")) {
+            object.addProperty("showReport", preferences.getBoolean("showReport", false));
+        }
+        if (preferences.contains("showRPCError")) {
+            object.addProperty("showRPCError", preferences.getBoolean("showRPCError", false));
+        }
+        if (preferences.contains("showSetReminder")) {
+            object.addProperty("showSetReminder", preferences.getBoolean("showSetReminder", false));
+        }
+        if (preferences.contains("showTimeHint")) {
+            object.addProperty("showTimeHint", preferences.getBoolean("showTimeHint", false));
+        }
+        if (preferences.contains("showTranslate")) {
+            object.addProperty("showTranslate", preferences.getBoolean("showTranslate", true));
+        }
+        if (preferences.contains("silenceNonContacts")) {
+            object.addProperty("silenceNonContacts", preferences.getBoolean("silenceNonContacts", false));
+        }
+        if (preferences.contains("strokeOnViews")) {
+            object.addProperty("strokeOnViews", preferences.getBoolean("strokeOnViews", true));
+        }
+        if (preferences.contains("tryToOpenAllLinksInIV")) {
+            object.addProperty("tryToOpenAllLinksInIV", preferences.getBoolean("tryToOpenAllLinksInIV", false));
+        }
+        if (preferences.contains("unmuteVideosWithVolumeButtons")) {
+            object.addProperty("unmuteVideosWithVolumeButtons", preferences.getBoolean("unmuteVideosWithVolumeButtons", true));
+        }
+        if (preferences.contains("useSystemEmoji")) {
+            object.addProperty("useSystemEmoji", preferences.getBoolean("useSystemEmoji", false));
+        }
+        if (preferences.contains("voiceEnhancements")) {
+            object.addProperty("voiceEnhancements", preferences.getBoolean("voiceEnhancements", false));
+        }
+        if (preferences.contains("cfAccountID")) {
+            object.addProperty("cfAccountID", preferences.getString("cfAccountID", ""));
+        }
+        if (preferences.contains("cfApiToken")) {
+            object.addProperty("cfApiToken", preferences.getString("cfApiToken", ""));
+        }
+        if (preferences.contains("externalTranslationProvider")) {
+            object.addProperty("externalTranslationProvider", preferences.getString("externalTranslationProvider", null));
+        }
+        if (preferences.contains("translationProvider2")) {
+            object.addProperty("translationProvider2", preferences.getString("translationProvider2", Translator.PROVIDER_GOOGLE));
+        }
+        if (preferences.contains("translationTarget")) {
+            object.addProperty("translationTarget", preferences.getString("translationTarget", "app"));
+        }
+        if (preferences.contains("restrictedLanguages")) {
+            var array = new JsonArray();
+            for (var language : preferences.getStringSet("restrictedLanguages", Collections.emptySet())) {
+                array.add(language);
+            }
+            object.add("restrictedLanguages", array);
+        }
+
+        return object.toString();
     }
 
     public static void importConfigs(String config) {
-        if (gson == null) {
-            gson = new GsonBuilder()
-                    .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
-                    .create();
+        var map = JsonParser.parseString(config);
+        if (!map.isJsonObject()) {
+            throw new IllegalStateException("INVALID_BACKUP");
         }
-        //noinspection unchecked
-        Map<String, ?> map = gson.fromJson(config, Map.class);
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
+        var object = map.getAsJsonObject();
         preferences.unregisterOnSharedPreferenceChangeListener(listener);
         var editor = preferences.edit();
         editor.clear();
-        map.forEach((BiConsumer<String, Object>) (s, o) -> {
-            try {
-                if (o instanceof Integer) {
-                    editor.putInt(s, (Integer) o);
-                } else if (o instanceof String) {
-                    editor.putString(s, (String) o);
-                } else if (o instanceof Boolean) {
-                    editor.putBoolean(s, (Boolean) o);
-                } else if (o instanceof Long) {
-                    if ("stickerSize".equals(s)) {
-                        editor.putFloat(s, ((Long) o).floatValue());
-                    } else {
-                        editor.putInt(s, ((Long) o).intValue());
-                    }
-                } else if (o instanceof Float) {
-                    editor.putFloat(s, (Float) o);
-                } else if (o instanceof Double) {
-                    editor.putFloat(s, ((Double) o).floatValue());
-                } else if (o instanceof ArrayList) {
-                    //noinspection unchecked
-                    editor.putStringSet(s, new HashSet<>((ArrayList<String>) o));
-                } else {
-                    FileLog.e("error putting " + s + " " + o.getClass().getName());
-                }
-            } catch (Exception e) {
-                FileLog.e("error putting " + s, e);
+        if (object.has("cameraInVideoMessages")) {
+            editor.putInt("cameraInVideoMessages", object.get("cameraInVideoMessages").getAsInt());
+        }
+        if (object.has("doubleTapAction")) {
+            editor.putInt("doubleTapAction", object.get("doubleTapAction").getAsInt());
+        }
+        if (object.has("doubleTapOutAction")) {
+            editor.putInt("doubleTapOutAction", object.get("doubleTapOutAction").getAsInt());
+        }
+        if (object.has("downloadSpeedBoost2")) {
+            editor.putInt("downloadSpeedBoost2", object.get("downloadSpeedBoost2").getAsInt());
+        }
+        if (object.has("idType")) {
+            editor.putInt("idType", object.get("idType").getAsInt());
+        }
+        if (object.has("maxRecentStickers")) {
+            editor.putInt("maxRecentStickers", object.get("maxRecentStickers").getAsInt());
+        }
+        if (object.has("nameOrder")) {
+            editor.putInt("nameOrder", object.get("nameOrder").getAsInt());
+        }
+        if (object.has("tabletMode")) {
+            editor.putInt("tabletMode", object.get("tabletMode").getAsInt());
+        }
+        if (object.has("tabsTitleType2")) {
+            editor.putInt("tabsTitleType2", object.get("tabsTitleType2").getAsInt());
+        }
+        if (object.has("transcribeProvider")) {
+            editor.putInt("transcribeProvider", object.get("transcribeProvider").getAsInt());
+        }
+        if (object.has("transType")) {
+            editor.putInt("transType", object.get("transType").getAsInt());
+        }
+        if (object.has("stickerSize")) {
+            editor.putFloat("stickerSize", object.get("stickerSize").getAsFloat());
+        }
+        if (object.has("accentAsNotificationColor")) {
+            editor.putBoolean("accentAsNotificationColor", object.get("accentAsNotificationColor").getAsBoolean());
+        }
+        if (object.has("askBeforeCall")) {
+            editor.putBoolean("askBeforeCall", object.get("askBeforeCall").getAsBoolean());
+        }
+        if (object.has("autoInlineBot")) {
+            editor.putBoolean("autoInlineBot", object.get("autoInlineBot").getAsBoolean());
+        }
+        if (object.has("autoPauseVideo")) {
+            editor.putBoolean("autoPauseVideo", object.get("autoPauseVideo").getAsBoolean());
+        }
+        if (object.has("autoTranslate")) {
+            editor.putBoolean("autoTranslate", object.get("autoTranslate").getAsBoolean());
+        }
+        if (object.has("bottomFilterTabs")) {
+            editor.putBoolean("bottomFilterTabs", object.get("bottomFilterTabs").getAsBoolean());
+        }
+        if (object.has("confirmAVMessage")) {
+            editor.putBoolean("confirmAVMessage", object.get("confirmAVMessage").getAsBoolean());
+        }
+        if (object.has("disableAppBarShadow")) {
+            editor.putBoolean("disableAppBarShadow", object.get("disableAppBarShadow").getAsBoolean());
+        }
+        if (object.has("disableGreetingSticker")) {
+            editor.putBoolean("disableGreetingSticker", object.get("disableGreetingSticker").getAsBoolean());
+        }
+        if (object.has("disableInstantCamera")) {
+            editor.putBoolean("disableInstantCamera", object.get("disableInstantCamera").getAsBoolean());
+        }
+        if (object.has("disableJumpToNextChannel")) {
+            editor.putBoolean("disableJumpToNextChannel", object.get("disableJumpToNextChannel").getAsBoolean());
+        }
+        if (object.has("disableMarkdownByDefault")) {
+            editor.putBoolean("disableMarkdownByDefault", object.get("disableMarkdownByDefault").getAsBoolean());
+        }
+        if (object.has("disableNumberRounding")) {
+            editor.putBoolean("disableNumberRounding", object.get("disableNumberRounding").getAsBoolean());
+        }
+        if (object.has("disableProximityEvents")) {
+            editor.putBoolean("disableProximityEvents", object.get("disableProximityEvents").getAsBoolean());
+        }
+        if (object.has("disableVoiceMessageAutoPlay")) {
+            editor.putBoolean("disableVoiceMessageAutoPlay", object.get("disableVoiceMessageAutoPlay").getAsBoolean());
+        }
+        if (object.has("forceFontWeightFallback")) {
+            editor.putBoolean("forceFontWeightFallback", object.get("forceFontWeightFallback").getAsBoolean());
+        }
+        if (object.has("formatTimeWithSeconds")) {
+            editor.putBoolean("formatTimeWithSeconds", object.get("formatTimeWithSeconds").getAsBoolean());
+        }
+        if (object.has("gooeyAvatarAnimation")) {
+            editor.putBoolean("gooeyAvatarAnimation", object.get("gooeyAvatarAnimation").getAsBoolean());
+        }
+        if (object.has("hideAllTab")) {
+            editor.putBoolean("hideAllTab", object.get("hideAllTab").getAsBoolean());
+        }
+        if (object.has("hideBottomNavigationBar")) {
+            editor.putBoolean("hideBottomNavigationBar", object.get("hideBottomNavigationBar").getAsBoolean());
+        }
+        if (object.has("hideChannelBottomButtons")) {
+            editor.putBoolean("hideChannelBottomButtons", object.get("hideChannelBottomButtons").getAsBoolean());
+        }
+        if (object.has("hideKeyboardOnChatScroll")) {
+            editor.putBoolean("hideKeyboardOnChatScroll", object.get("hideKeyboardOnChatScroll").getAsBoolean());
+        }
+        if (object.has("hideStories")) {
+            editor.putBoolean("hideStories", object.get("hideStories").getAsBoolean());
+        }
+        if (object.has("hideTimeOnSticker")) {
+            editor.putBoolean("hideTimeOnSticker", object.get("hideTimeOnSticker").getAsBoolean());
+        }
+        if (object.has("ignoreBlocked2")) {
+            editor.putBoolean("ignoreBlocked2", object.get("ignoreBlocked2").getAsBoolean());
+        }
+        if (object.has("ignoreContentRestriction")) {
+            editor.putBoolean("ignoreContentRestriction", object.get("ignoreContentRestriction").getAsBoolean());
+        }
+        if (object.has("keepFormatting")) {
+            editor.putBoolean("keepFormatting", object.get("keepFormatting").getAsBoolean());
+        }
+        if (object.has("mapDriftingFix")) {
+            editor.putBoolean("mapDriftingFix", object.get("mapDriftingFix").getAsBoolean());
+        }
+        if (object.has("markdownParseLinks")) {
+            editor.putBoolean("markdownParseLinks", object.get("markdownParseLinks").getAsBoolean());
+        }
+        if (object.has("mediaPreview")) {
+            editor.putBoolean("mediaPreview", object.get("mediaPreview").getAsBoolean());
+        }
+        if (object.has("minimizedStickerCreator")) {
+            editor.putBoolean("minimizedStickerCreator", object.get("minimizedStickerCreator").getAsBoolean());
+        }
+        if (object.has("newMarkdownParser")) {
+            editor.putBoolean("newMarkdownParser", object.get("newMarkdownParser").getAsBoolean());
+        }
+        if (object.has("openArchiveOnPull")) {
+            editor.putBoolean("openArchiveOnPull", object.get("openArchiveOnPull").getAsBoolean());
+        }
+        if (object.has("predictiveBackAnimation")) {
+            editor.putBoolean("predictiveBackAnimation", object.get("predictiveBackAnimation").getAsBoolean());
+        }
+        if (object.has("preferIPv6")) {
+            editor.putBoolean("preferIPv6", object.get("preferIPv6").getAsBoolean());
+        }
+        if (object.has("preferOriginalQuality")) {
+            editor.putBoolean("preferOriginalQuality", object.get("preferOriginalQuality").getAsBoolean());
+        }
+        if (object.has("quickForward")) {
+            editor.putBoolean("quickForward", object.get("quickForward").getAsBoolean());
+        }
+        if (object.has("reducedColors")) {
+            editor.putBoolean("reducedColors", object.get("reducedColors").getAsBoolean());
+        }
+        if (object.has("shouldNOTTrustMe")) {
+            editor.putBoolean("shouldNOTTrustMe", object.get("shouldNOTTrustMe").getAsBoolean());
+        }
+        if (object.has("showAddToSavedMessages")) {
+            editor.putBoolean("showAddToSavedMessages", object.get("showAddToSavedMessages").getAsBoolean());
+        }
+        if (object.has("showCopyPhoto")) {
+            editor.putBoolean("showCopyPhoto", object.get("showCopyPhoto").getAsBoolean());
+        }
+        if (object.has("showDeleteDownloadedFile")) {
+            editor.putBoolean("showDeleteDownloadedFile", object.get("showDeleteDownloadedFile").getAsBoolean());
+        }
+        if (object.has("showMessageDetails")) {
+            editor.putBoolean("showMessageDetails", object.get("showMessageDetails").getAsBoolean());
+        }
+        if (object.has("showNoQuoteForward")) {
+            editor.putBoolean("showNoQuoteForward", object.get("showNoQuoteForward").getAsBoolean());
+        }
+        if (object.has("showOpenIn")) {
+            editor.putBoolean("showOpenIn", object.get("showOpenIn").getAsBoolean());
+        }
+        if (object.has("showOriginal")) {
+            editor.putBoolean("showOriginal", object.get("showOriginal").getAsBoolean());
+        }
+        if (object.has("showPrPr")) {
+            editor.putBoolean("showPrPr", object.get("showPrPr").getAsBoolean());
+        }
+        if (object.has("showQrCode")) {
+            editor.putBoolean("showQrCode", object.get("showQrCode").getAsBoolean());
+        }
+        if (object.has("showRepeat")) {
+            editor.putBoolean("showRepeat", object.get("showRepeat").getAsBoolean());
+        }
+        if (object.has("showReport")) {
+            editor.putBoolean("showReport", object.get("showReport").getAsBoolean());
+        }
+        if (object.has("showRPCError")) {
+            editor.putBoolean("showRPCError", object.get("showRPCError").getAsBoolean());
+        }
+        if (object.has("showSetReminder")) {
+            editor.putBoolean("showSetReminder", object.get("showSetReminder").getAsBoolean());
+        }
+        if (object.has("showTimeHint")) {
+            editor.putBoolean("showTimeHint", object.get("showTimeHint").getAsBoolean());
+        }
+        if (object.has("showTranslate")) {
+            editor.putBoolean("showTranslate", object.get("showTranslate").getAsBoolean());
+        }
+        if (object.has("silenceNonContacts")) {
+            editor.putBoolean("silenceNonContacts", object.get("silenceNonContacts").getAsBoolean());
+        }
+        if (object.has("strokeOnViews")) {
+            editor.putBoolean("strokeOnViews", object.get("strokeOnViews").getAsBoolean());
+        }
+        if (object.has("tryToOpenAllLinksInIV")) {
+            editor.putBoolean("tryToOpenAllLinksInIV", object.get("tryToOpenAllLinksInIV").getAsBoolean());
+        }
+        if (object.has("unmuteVideosWithVolumeButtons")) {
+            editor.putBoolean("unmuteVideosWithVolumeButtons", object.get("unmuteVideosWithVolumeButtons").getAsBoolean());
+        }
+        if (object.has("useSystemEmoji")) {
+            editor.putBoolean("useSystemEmoji", object.get("useSystemEmoji").getAsBoolean());
+        }
+        if (object.has("voiceEnhancements")) {
+            editor.putBoolean("voiceEnhancements", object.get("voiceEnhancements").getAsBoolean());
+        }
+        if (object.has("cfAccountID")) {
+            editor.putString("cfAccountID", object.get("cfAccountID").getAsString());
+        }
+        if (object.has("cfApiToken")) {
+            editor.putString("cfApiToken", object.get("cfApiToken").getAsString());
+        }
+        if (object.has("externalTranslationProvider")) {
+            editor.putString("externalTranslationProvider", object.get("externalTranslationProvider").getAsString());
+        }
+        if (object.has("translationProvider2")) {
+            editor.putString("translationProvider2", object.get("translationProvider2").getAsString());
+        }
+        if (object.has("translationTarget")) {
+            editor.putString("translationTarget", object.get("translationTarget").getAsString());
+        }
+        if (object.has("restrictedLanguages")) {
+            var set = new HashSet<String>();
+            var array = object.get("restrictedLanguages").getAsJsonArray();
+            for (var element : array) {
+                set.add(element.getAsString());
             }
-        });
+            editor.putStringSet("restrictedLanguages", set);
+        }
+
         editor.apply();
         loadConfig(true);
     }
 
-    public static void setCameraInVideoMessages(int camera) {
-        cameraInVideoMessages = camera;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("cameraInVideoMessages", cameraInVideoMessages);
-        editor.apply();
+    public static void setCameraInVideoMessages(int value) {
+        cameraInVideoMessages = value;
+        preferences.edit().putInt("cameraInVideoMessages", value).apply();
     }
 
-    public static void setTranscribeProvider(int provider) {
-        transcribeProvider = provider;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("transcribeProvider", transcribeProvider);
-        editor.apply();
+    public static void setDoubleTapInAction(int value) {
+        doubleTapInAction = value;
+        preferences.edit().putInt("doubleTapInAction", value).apply();
     }
 
-    public static void setCfAccountID(String accountID) {
-        cfAccountID = accountID;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("cfAccountID", cfAccountID);
-        editor.apply();
+    public static void setDoubleTapOutAction(int value) {
+        doubleTapOutAction = value;
+        preferences.edit().putInt("doubleTapOutAction", value).apply();
     }
 
-    public static void setCfApiToken(String apiToken) {
-        cfApiToken = apiToken;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("cfApiToken", cfApiToken);
-        editor.apply();
+    public static void setDownloadSpeedBoost(int value) {
+        downloadSpeedBoost = value;
+        preferences.edit().putInt("downloadSpeedBoost", value).apply();
     }
 
-    public static void setExternalTranslationProvider(String provider) {
-        externalTranslationProvider = provider;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("externalTranslationProvider", externalTranslationProvider);
-        editor.apply();
+    public static void setIdType(int value) {
+        idType = value;
+        preferences.edit().putInt("idType", value).apply();
     }
 
-    public static void setNewMarkdownParser(boolean newParser) {
-        newMarkdownParser = newParser;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("newMarkdownParser", newMarkdownParser);
-        editor.apply();
+    public static void setMaxRecentStickers(int value) {
+        maxRecentStickers = value;
+        preferences.edit().putInt("maxRecentStickers", value).apply();
     }
 
-    public static void saveRestrictedLanguages(Set<String> languages) {
-        restrictedLanguages = languages;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putStringSet("restrictedLanguages", languages);
-        editor.apply();
+    public static void setNameOrder(int value) {
+        nameOrder = value;
+        preferences.edit().putInt("nameOrder", value).apply();
     }
 
-    public static void setDoubleTapInAction(int action) {
-        doubleTapInAction = action;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("doubleTapAction", doubleTapInAction);
-        editor.apply();
+    public static void setTabletMode(int value) {
+        tabletMode = value;
+        preferences.edit().putInt("tabletMode", value).apply();
     }
 
-    public static void setDoubleTapOutAction(int action) {
-        doubleTapOutAction = action;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("doubleTapOutAction", doubleTapOutAction);
-        editor.apply();
+    public static void setTabsTitleType(int value) {
+        tabsTitleType = value;
+        preferences.edit().putInt("tabsTitleType", value).apply();
     }
 
-    public static void setTransType(int type) {
-        transType = type;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("transType", transType);
-        editor.apply();
+    public static void setTranscribeProvider(int value) {
+        transcribeProvider = value;
+        preferences.edit().putInt("transcribeProvider", value).apply();
     }
 
-    public static void setDownloadSpeedBoost(int boost) {
-        downloadSpeedBoost = boost;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("downloadSpeedBoost2", boost);
-        editor.apply();
+    public static void setTransType(int value) {
+        transType = value;
+        preferences.edit().putInt("transType", value).apply();
     }
 
-    public static void setBottomFilterTabs(boolean bottom) {
-        bottomFilterTabs = bottom;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("bottomFilterTabs", bottomFilterTabs);
-        editor.apply();
-    }
-
-    public static void toggleStrokeOnViews() {
-        strokeOnViews = !strokeOnViews;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("strokeOnViews", strokeOnViews);
-        editor.apply();
-    }
-
-    public static void togglePredictiveBackAnimation() {
-        predictiveBackAnimation = !predictiveBackAnimation;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("predictiveBackAnimation", predictiveBackAnimation);
-        editor.apply();
-    }
-
-    public static void toggleHideBottomNavigationBar() {
-        hideBottomNavigationBar = !hideBottomNavigationBar;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideBottomNavigationBar", hideBottomNavigationBar);
-        editor.apply();
-    }
-
-    public static void toggleKeepFormatting() {
-        keepFormatting = !keepFormatting;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("keepFormatting", keepFormatting);
-        editor.apply();
-    }
-
-    public static void toggleHideChannelBottomButtons() {
-        hideChannelBottomButtons = !hideChannelBottomButtons;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideChannelBottomButtons", hideChannelBottomButtons);
-        editor.apply();
-    }
-
-    public static void toggleMinimizedStickerCreator() {
-        minimizedStickerCreator = !minimizedStickerCreator;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("minimizedStickerCreator", minimizedStickerCreator);
-        editor.apply();
-    }
-
-    public static void toggleForceFontWeightFallback() {
-        forceFontWeightFallback = !forceFontWeightFallback;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("forceFontWeightFallback", forceFontWeightFallback);
-        editor.apply();
-    }
-
-    public static void toggleAutoInlineBot() {
-        autoInlineBot = !autoInlineBot;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("autoInlineBot", autoInlineBot);
-        editor.apply();
-    }
-
-    public static void togglePreferOriginalQuality() {
-        preferOriginalQuality = !preferOriginalQuality;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("preferOriginalQuality", preferOriginalQuality);
-        editor.apply();
-    }
-
-    public static void toggleShowTimeHint() {
-        showTimeHint = !showTimeHint;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showTimeHint", showTimeHint);
-        editor.apply();
-    }
-
-    public static void toggleIgnoreContentRestriction() {
-        ignoreContentRestriction = !ignoreContentRestriction;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("ignoreContentRestriction", ignoreContentRestriction);
-        editor.apply();
-    }
-
-    public static void toggleReducedColors() {
-        reducedColors = !reducedColors;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("reducedColors", reducedColors);
-        editor.apply();
-    }
-
-    public static void toggleQuickForward() {
-        quickForward = !quickForward;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("quickForward", quickForward);
-        editor.apply();
-    }
-
-    public static void toggleHideStories() {
-        hideStories = !hideStories;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideStories", hideStories);
-        editor.apply();
-    }
-
-    public static void toggleShowQrCode() {
-        showQrCode = !showQrCode;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showQrCode", showQrCode);
-        editor.apply();
-    }
-
-    public static void toggleShowOpenIn() {
-        showOpenIn = !showOpenIn;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showOpenIn", showOpenIn);
-        editor.apply();
-    }
-
-    public static void toggleShowOriginal() {
-        showOriginal = !showOriginal;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showOriginal", showOriginal);
-        editor.apply();
-    }
-
-    public static void toggleMarkdownParseLinks() {
-        markdownParseLinks = !markdownParseLinks;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("markdownParseLinks", markdownParseLinks);
-        editor.apply();
-    }
-
-    public static void toggleDisableMarkdownByDefault() {
-        disableMarkdownByDefault = !disableMarkdownByDefault;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableMarkdownByDefault", disableMarkdownByDefault);
-        editor.apply();
-    }
-
-    public static void toggleHideTimeOnSticker() {
-        hideTimeOnSticker = !hideTimeOnSticker;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideTimeOnSticker", hideTimeOnSticker);
-        editor.apply();
-    }
-
-    public static void toggleShowRPCError() {
-        showRPCError = !showRPCError;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showRPCError", showRPCError);
-        editor.apply();
-    }
-
-    public static void toggleShowAddToSavedMessages() {
-        showAddToSavedMessages = !showAddToSavedMessages;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showAddToSavedMessages", showAddToSavedMessages);
-        editor.apply();
-    }
-
-    public static void toggleShowSetReminder() {
-        showSetReminder = !showSetReminder;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showSetReminder", showSetReminder);
-        editor.apply();
-    }
-
-    public static void toggleShowReport() {
-        showReport = !showReport;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showReport", showReport);
-        editor.apply();
-    }
-
-    public static void toggleShowPrPr() {
-        showPrPr = !showPrPr;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showPrPr", showPrPr);
-        editor.apply();
-    }
-
-    public static void toggleShowDeleteDownloadedFile() {
-        showDeleteDownloadedFile = !showDeleteDownloadedFile;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showDeleteDownloadedFile", showDeleteDownloadedFile);
-        editor.apply();
-    }
-
-    public static void toggleShowMessageDetails() {
-        showMessageDetails = !showMessageDetails;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showMessageDetails", showMessageDetails);
-        editor.apply();
-    }
-
-    public static void toggleShowRepeat() {
-        showRepeat = !showRepeat;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showRepeat", showRepeat);
-        editor.apply();
-    }
-
-    public static void toggleIPv6() {
-        preferIPv6 = !preferIPv6;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("preferIPv6", preferIPv6);
-        editor.apply();
-    }
-
-    public static void toggleIgnoreBlocked() {
-        ignoreBlocked = !ignoreBlocked;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("ignoreBlocked2", ignoreBlocked);
-        editor.apply();
-    }
-
-    public static void setTabletMode(int mode) {
-        tabletMode = mode;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("tabletMode", tabletMode);
-        editor.apply();
-    }
-
-    public static void setNameOrder(int order) {
-        nameOrder = order;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("nameOrder", nameOrder);
-        editor.apply();
-    }
-
-    public static void toggleShowTranslate() {
-        showTranslate = !showTranslate;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showTranslate", showTranslate);
-        editor.apply();
-    }
-
-    public static void setStickerSize(float size) {
-        stickerSize = size;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("stickerSize", stickerSize);
-        editor.apply();
-    }
-
-    public static void setTranslationProvider(String provider) {
-        translationProvider = provider;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("translationProvider2", translationProvider);
-        editor.apply();
-    }
-
-    public static void setTranslationTarget(String target) {
-        translationTarget = target;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("translationTarget", translationTarget);
-        editor.apply();
-    }
-
-    public static void toggleOpenArchiveOnPull() {
-        openArchiveOnPull = !openArchiveOnPull;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("openArchiveOnPull", openArchiveOnPull);
-        editor.apply();
-    }
-
-    public static void toggleHideKeyboardOnChatScroll() {
-        hideKeyboardOnChatScroll = !hideKeyboardOnChatScroll;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideKeyboardOnChatScroll", hideKeyboardOnChatScroll);
-        editor.apply();
-    }
-
-    public static void toggleUseSystemEmoji() {
-        useSystemEmoji = !useSystemEmoji;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("useSystemEmoji", useSystemEmoji);
-        editor.apply();
-    }
-
-    public static void toggleHideAllTab() {
-        hideAllTab = !hideAllTab;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("hideAllTab", hideAllTab);
-        editor.apply();
-    }
-
-    public static void setTabsTitleType(int type) {
-        tabsTitleType = type;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("tabsTitleType2", tabsTitleType);
-        editor.apply();
-    }
-
-    public static void toggleConfirmAVMessage() {
-        confirmAVMessage = !confirmAVMessage;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("confirmAVMessage", confirmAVMessage);
-        editor.apply();
-    }
-
-    public static void toggleAskBeforeCall() {
-        askBeforeCall = !askBeforeCall;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("askBeforeCall", askBeforeCall);
-        editor.apply();
-    }
-
-    public static void toggleDisableNumberRounding() {
-        disableNumberRounding = !disableNumberRounding;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableNumberRounding", disableNumberRounding);
-        editor.apply();
-    }
-
-    public static void toggleDisableGreetingSticker() {
-        disableGreetingSticker = !disableGreetingSticker;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableGreetingSticker", disableGreetingSticker);
-        editor.apply();
-    }
-
-    public static void toggleDisableAppBarShadow() {
-        disableAppBarShadow = !disableAppBarShadow;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableAppBarShadow", disableAppBarShadow);
-        editor.apply();
-    }
-
-    public static void toggleMediaPreview() {
-        mediaPreview = !mediaPreview;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("mediaPreview", mediaPreview);
-        editor.apply();
-    }
-
-    public static void setIdType(int type) {
-        idType = type;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("idType", idType);
-        editor.apply();
-    }
-
-    public static void toggleAutoPauseVideo() {
-        autoPauseVideo = !autoPauseVideo;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("autoPauseVideo", autoPauseVideo);
-        editor.apply();
-    }
-
-    public static void toggleDisableProximityEvents() {
-        disableProximityEvents = !disableProximityEvents;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableProximityEvents", disableProximityEvents);
-        editor.apply();
-    }
-
-    public static void toggleMapDriftingFix() {
-        mapDriftingFix = !mapDriftingFix;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("mapDriftingFix", mapDriftingFix);
-        editor.apply();
-    }
-
-    public static void toggleVoiceEnhancements() {
-        voiceEnhancements = !voiceEnhancements;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("voiceEnhancements", voiceEnhancements);
-        editor.apply();
-    }
-
-    public static void toggleDisabledInstantCamera() {
-        disableInstantCamera = !disableInstantCamera;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableInstantCamera", disableInstantCamera);
-        editor.apply();
-    }
-
-    public static void toggleTryToOpenAllLinksInIV() {
-        tryToOpenAllLinksInIV = !tryToOpenAllLinksInIV;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("tryToOpenAllLinksInIV", tryToOpenAllLinksInIV);
-        editor.apply();
-    }
-
-    public static void toggleFormatTimeWithSeconds() {
-        formatTimeWithSeconds = !formatTimeWithSeconds;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("formatTimeWithSeconds", formatTimeWithSeconds);
-        editor.apply();
+    public static void setStickerSize(float value) {
+        stickerSize = value;
+        preferences.edit().putFloat("stickerSize", value).apply();
     }
 
     public static void toggleAccentAsNotificationColor() {
         accentAsNotificationColor = !accentAsNotificationColor;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("accentAsNotificationColor", accentAsNotificationColor);
-        editor.apply();
+        preferences.edit().putBoolean("accentAsNotificationColor", accentAsNotificationColor).apply();
     }
 
-    public static void toggleSilenceNonContacts() {
-        silenceNonContacts = !silenceNonContacts;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("silenceNonContacts", silenceNonContacts);
-        editor.apply();
+    public static void toggleAskBeforeCall() {
+        askBeforeCall = !askBeforeCall;
+        preferences.edit().putBoolean("askBeforeCall", askBeforeCall).apply();
     }
 
-    public static void toggleDisableJumpToNextChannel() {
-        disableJumpToNextChannel = !disableJumpToNextChannel;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableJumpToNextChannel", disableJumpToNextChannel);
-        editor.apply();
+    public static void toggleAutoInlineBot() {
+        autoInlineBot = !autoInlineBot;
+        preferences.edit().putBoolean("autoInlineBot", autoInlineBot).apply();
     }
 
-    public static void toggleShowNoQuoteForward() {
-        showNoQuoteForward = !showNoQuoteForward;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showNoQuoteForward", showNoQuoteForward);
-        editor.apply();
-    }
-
-    public static void toggleShowCopyPhoto() {
-        showCopyPhoto = !showCopyPhoto;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showCopyPhoto", showCopyPhoto);
-        editor.apply();
+    public static void toggleAutoPauseVideo() {
+        autoPauseVideo = !autoPauseVideo;
+        preferences.edit().putBoolean("autoPauseVideo", autoPauseVideo).apply();
     }
 
     public static void toggleAutoTranslate() {
         autoTranslate = !autoTranslate;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("autoTranslate", autoTranslate);
-        editor.apply();
+        preferences.edit().putBoolean("autoTranslate", autoTranslate).apply();
+    }
+
+    public static void setBottomFilterTabs(boolean value) {
+        bottomFilterTabs = value;
+        preferences.edit().putBoolean("bottomFilterTabs", value).apply();
+    }
+
+    public static void toggleConfirmAVMessage() {
+        confirmAVMessage = !confirmAVMessage;
+        preferences.edit().putBoolean("confirmAVMessage", confirmAVMessage).apply();
+    }
+
+    public static void toggleDisableAppBarShadow() {
+        disableAppBarShadow = !disableAppBarShadow;
+        preferences.edit().putBoolean("disableAppBarShadow", disableAppBarShadow).apply();
+    }
+
+    public static void toggleDisableGreetingSticker() {
+        disableGreetingSticker = !disableGreetingSticker;
+        preferences.edit().putBoolean("disableGreetingSticker", disableGreetingSticker).apply();
+    }
+
+    public static void toggleDisableInstantCamera() {
+        disableInstantCamera = !disableInstantCamera;
+        preferences.edit().putBoolean("disableInstantCamera", disableInstantCamera).apply();
+    }
+
+    public static void toggleDisableJumpToNextChannel() {
+        disableJumpToNextChannel = !disableJumpToNextChannel;
+        preferences.edit().putBoolean("disableJumpToNextChannel", disableJumpToNextChannel).apply();
+    }
+
+    public static void toggleDisableMarkdownByDefault() {
+        disableMarkdownByDefault = !disableMarkdownByDefault;
+        preferences.edit().putBoolean("disableMarkdownByDefault", disableMarkdownByDefault).apply();
+    }
+
+    public static void toggleDisableNumberRounding() {
+        disableNumberRounding = !disableNumberRounding;
+        preferences.edit().putBoolean("disableNumberRounding", disableNumberRounding).apply();
+    }
+
+    public static void toggleDisableProximityEvents() {
+        disableProximityEvents = !disableProximityEvents;
+        preferences.edit().putBoolean("disableProximityEvents", disableProximityEvents).apply();
     }
 
     public static void toggleDisableVoiceMessageAutoPlay() {
         disableVoiceMessageAutoPlay = !disableVoiceMessageAutoPlay;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("disableVoiceMessageAutoPlay", disableVoiceMessageAutoPlay);
-        editor.apply();
+        preferences.edit().putBoolean("disableVoiceMessageAutoPlay", disableVoiceMessageAutoPlay).apply();
+    }
+
+    public static void toggleForceFontWeightFallback() {
+        forceFontWeightFallback = !forceFontWeightFallback;
+        preferences.edit().putBoolean("forceFontWeightFallback", forceFontWeightFallback).apply();
+    }
+
+    public static void toggleFormatTimeWithSeconds() {
+        formatTimeWithSeconds = !formatTimeWithSeconds;
+        preferences.edit().putBoolean("formatTimeWithSeconds", formatTimeWithSeconds).apply();
+    }
+
+    public static void toggleGooeyAvatarAnimation() {
+        gooeyAvatarAnimation = !gooeyAvatarAnimation;
+        preferences.edit().putBoolean("gooeyAvatarAnimation", gooeyAvatarAnimation).apply();
+    }
+
+    public static void toggleHideAllTab() {
+        hideAllTab = !hideAllTab;
+        preferences.edit().putBoolean("hideAllTab", hideAllTab).apply();
+    }
+
+    public static void toggleHideBottomNavigationBar() {
+        hideBottomNavigationBar = !hideBottomNavigationBar;
+        preferences.edit().putBoolean("hideBottomNavigationBar", hideBottomNavigationBar).apply();
+    }
+
+    public static void toggleHideChannelBottomButtons() {
+        hideChannelBottomButtons = !hideChannelBottomButtons;
+        preferences.edit().putBoolean("hideChannelBottomButtons", hideChannelBottomButtons).apply();
+    }
+
+    public static void toggleHideKeyboardOnChatScroll() {
+        hideKeyboardOnChatScroll = !hideKeyboardOnChatScroll;
+        preferences.edit().putBoolean("hideKeyboardOnChatScroll", hideKeyboardOnChatScroll).apply();
+    }
+
+    public static void toggleHideStories() {
+        hideStories = !hideStories;
+        preferences.edit().putBoolean("hideStories", hideStories).apply();
+    }
+
+    public static void toggleHideTimeOnSticker() {
+        hideTimeOnSticker = !hideTimeOnSticker;
+        preferences.edit().putBoolean("hideTimeOnSticker", hideTimeOnSticker).apply();
+    }
+
+    public static void toggleIgnoreBlocked() {
+        ignoreBlocked = !ignoreBlocked;
+        preferences.edit().putBoolean("ignoreBlocked", ignoreBlocked).apply();
+    }
+
+    public static void toggleIgnoreContentRestriction() {
+        ignoreContentRestriction = !ignoreContentRestriction;
+        preferences.edit().putBoolean("ignoreContentRestriction", ignoreContentRestriction).apply();
+    }
+
+    public static void toggleKeepFormatting() {
+        keepFormatting = !keepFormatting;
+        preferences.edit().putBoolean("keepFormatting", keepFormatting).apply();
+    }
+
+    public static void toggleMapDriftingFix() {
+        mapDriftingFix = !mapDriftingFix;
+        preferences.edit().putBoolean("mapDriftingFix", mapDriftingFix).apply();
+    }
+
+    public static void toggleMarkdownParseLinks() {
+        markdownParseLinks = !markdownParseLinks;
+        preferences.edit().putBoolean("markdownParseLinks", markdownParseLinks).apply();
+    }
+
+    public static void toggleMediaPreview() {
+        mediaPreview = !mediaPreview;
+        preferences.edit().putBoolean("mediaPreview", mediaPreview).apply();
+    }
+
+    public static void toggleMinimizedStickerCreator() {
+        minimizedStickerCreator = !minimizedStickerCreator;
+        preferences.edit().putBoolean("minimizedStickerCreator", minimizedStickerCreator).apply();
+    }
+
+    public static void setNewMarkdownParser(boolean value) {
+        newMarkdownParser = value;
+        preferences.edit().putBoolean("newMarkdownParser", value).apply();
+    }
+
+    public static void toggleOpenArchiveOnPull() {
+        openArchiveOnPull = !openArchiveOnPull;
+        preferences.edit().putBoolean("openArchiveOnPull", openArchiveOnPull).apply();
+    }
+
+    public static void togglePredictiveBackAnimation() {
+        predictiveBackAnimation = !predictiveBackAnimation;
+        preferences.edit().putBoolean("predictiveBackAnimation", predictiveBackAnimation).apply();
+    }
+
+    public static void togglePreferIPv6() {
+        preferIPv6 = !preferIPv6;
+        preferences.edit().putBoolean("preferIPv6", preferIPv6).apply();
+    }
+
+    public static void togglePreferOriginalQuality() {
+        preferOriginalQuality = !preferOriginalQuality;
+        preferences.edit().putBoolean("preferOriginalQuality", preferOriginalQuality).apply();
+    }
+
+    public static void toggleQuickForward() {
+        quickForward = !quickForward;
+        preferences.edit().putBoolean("quickForward", quickForward).apply();
+    }
+
+    public static void toggleReducedColors() {
+        reducedColors = !reducedColors;
+        preferences.edit().putBoolean("reducedColors", reducedColors).apply();
+    }
+
+    public static void toggleShouldNOTTrustMe() {
+        shouldNOTTrustMe = !shouldNOTTrustMe;
+        preferences.edit().putBoolean("shouldNOTTrustMe", shouldNOTTrustMe).apply();
+    }
+
+    public static void toggleShowAddToSavedMessages() {
+        showAddToSavedMessages = !showAddToSavedMessages;
+        preferences.edit().putBoolean("showAddToSavedMessages", showAddToSavedMessages).apply();
+    }
+
+    public static void toggleShowCopyPhoto() {
+        showCopyPhoto = !showCopyPhoto;
+        preferences.edit().putBoolean("showCopyPhoto", showCopyPhoto).apply();
+    }
+
+    public static void toggleShowDeleteDownloadedFile() {
+        showDeleteDownloadedFile = !showDeleteDownloadedFile;
+        preferences.edit().putBoolean("showDeleteDownloadedFile", showDeleteDownloadedFile).apply();
+    }
+
+    public static void toggleShowMessageDetails() {
+        showMessageDetails = !showMessageDetails;
+        preferences.edit().putBoolean("showMessageDetails", showMessageDetails).apply();
+    }
+
+    public static void toggleShowNoQuoteForward() {
+        showNoQuoteForward = !showNoQuoteForward;
+        preferences.edit().putBoolean("showNoQuoteForward", showNoQuoteForward).apply();
+    }
+
+    public static void toggleShowOpenIn() {
+        showOpenIn = !showOpenIn;
+        preferences.edit().putBoolean("showOpenIn", showOpenIn).apply();
+    }
+
+    public static void toggleShowOriginal() {
+        showOriginal = !showOriginal;
+        preferences.edit().putBoolean("showOriginal", showOriginal).apply();
+    }
+
+    public static void toggleShowPrPr() {
+        showPrPr = !showPrPr;
+        preferences.edit().putBoolean("showPrPr", showPrPr).apply();
+    }
+
+    public static void toggleShowQrCode() {
+        showQrCode = !showQrCode;
+        preferences.edit().putBoolean("showQrCode", showQrCode).apply();
+    }
+
+    public static void toggleShowRepeat() {
+        showRepeat = !showRepeat;
+        preferences.edit().putBoolean("showRepeat", showRepeat).apply();
+    }
+
+    public static void toggleShowReport() {
+        showReport = !showReport;
+        preferences.edit().putBoolean("showReport", showReport).apply();
+    }
+
+    public static void toggleShowRPCError() {
+        showRPCError = !showRPCError;
+        preferences.edit().putBoolean("showRPCError", showRPCError).apply();
+    }
+
+    public static void toggleShowSetReminder() {
+        showSetReminder = !showSetReminder;
+        preferences.edit().putBoolean("showSetReminder", showSetReminder).apply();
+    }
+
+    public static void toggleShowTimeHint() {
+        showTimeHint = !showTimeHint;
+        preferences.edit().putBoolean("showTimeHint", showTimeHint).apply();
+    }
+
+    public static void toggleShowTranslate() {
+        showTranslate = !showTranslate;
+        preferences.edit().putBoolean("showTranslate", showTranslate).apply();
+    }
+
+    public static void toggleSilenceNonContacts() {
+        silenceNonContacts = !silenceNonContacts;
+        preferences.edit().putBoolean("silenceNonContacts", silenceNonContacts).apply();
+    }
+
+    public static void toggleStrokeOnViews() {
+        strokeOnViews = !strokeOnViews;
+        preferences.edit().putBoolean("strokeOnViews", strokeOnViews).apply();
+    }
+
+    public static void toggleTryToOpenAllLinksInIV() {
+        tryToOpenAllLinksInIV = !tryToOpenAllLinksInIV;
+        preferences.edit().putBoolean("tryToOpenAllLinksInIV", tryToOpenAllLinksInIV).apply();
     }
 
     public static void toggleUnmuteVideosWithVolumeButtons() {
         unmuteVideosWithVolumeButtons = !unmuteVideosWithVolumeButtons;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("unmuteVideosWithVolumeButtons", unmuteVideosWithVolumeButtons);
-        editor.apply();
+        preferences.edit().putBoolean("unmuteVideosWithVolumeButtons", unmuteVideosWithVolumeButtons).apply();
     }
 
-    public static void setMaxRecentStickers(int size) {
-        maxRecentStickers = size;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("maxRecentStickers", maxRecentStickers);
-        editor.apply();
+    public static void toggleUseSystemEmoji() {
+        useSystemEmoji = !useSystemEmoji;
+        preferences.edit().putBoolean("useSystemEmoji", useSystemEmoji).apply();
+    }
+
+    public static void toggleVoiceEnhancements() {
+        voiceEnhancements = !voiceEnhancements;
+        preferences.edit().putBoolean("voiceEnhancements", voiceEnhancements).apply();
+    }
+
+    public static void setCfAccountID(String value) {
+        cfAccountID = value;
+        preferences.edit().putString("cfAccountID", value).apply();
+    }
+
+    public static void setCfApiToken(String value) {
+        cfApiToken = value;
+        preferences.edit().putString("cfApiToken", value).apply();
+    }
+
+    public static void setExternalTranslationProvider(String value) {
+        externalTranslationProvider = value;
+        preferences.edit().putString("externalTranslationProvider", value).apply();
+    }
+
+    public static void setTranslationProvider(String value) {
+        translationProvider = value;
+        preferences.edit().putString("translationProvider", value).apply();
+    }
+
+    public static void setTranslationTarget(String value) {
+        translationTarget = value;
+        preferences.edit().putString("translationTarget", value).apply();
+    }
+
+    public static void setRestrictedLanguages(Set<String> value) {
+        restrictedLanguages = value;
+        preferences.edit().putStringSet("restrictedLanguages", value).apply();
     }
 
     public static int getNotificationColor() {

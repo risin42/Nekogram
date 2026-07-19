@@ -99,7 +99,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 
-
 public class BotWebViewAttachedSheet implements NotificationCenter.NotificationCenterDelegate, BaseFragment.AttachedSheet, BottomSheetTabsOverlay.Sheet {
     public final static int
             TYPE_WEB_VIEW_BUTTON = 0,
@@ -1902,7 +1901,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         if (userFull == null) return false;
         if (userFull.bot_info == null) return false;
         if (userFull.bot_info.privacy_policy_url != null) return true;
-        for (TLRPC.TL_botCommand command : userFull.bot_info.commands) {
+        for (TLRPC.BotCommand command : userFull.bot_info.commands) {
             if ("privacy".equals(command.command)) {
                 return true;
             }

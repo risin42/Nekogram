@@ -114,9 +114,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 public class BotWebViewSheet extends Dialog implements NotificationCenter.NotificationCenterDelegate, BottomSheetTabsOverlay.Sheet {
-    public final static int TYPE_WEB_VIEW_BUTTON = 0, TYPE_SIMPLE_WEB_VIEW_BUTTON = 1, TYPE_BOT_MENU_BUTTON = 2, TYPE_WEB_VIEW_BOT_APP = 3, TYPE_WEB_VIEW_BOT_MAIN = 4;
+    public final static int TYPE_WEB_VIEW_BUTTON = 0,
+            TYPE_SIMPLE_WEB_VIEW_BUTTON = 1,
+            TYPE_BOT_MENU_BUTTON = 2,
+            TYPE_WEB_VIEW_BOT_APP = 3,
+            TYPE_WEB_VIEW_BOT_MAIN = 4,
+            TYPE_WEB_VIEW_GUARD = 5;
 
     public final static int FLAG_FROM_INLINE_SWITCH = 1;
     public final static int FLAG_FROM_SIDE_MENU = 2;
@@ -195,8 +199,6 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
     private ChatAttachAlertBotWebViewLayout.WebProgressView progressView;
     private Theme.ResourcesProvider resourcesProvider;
     private boolean ignoreLayout;
-
-    private String textToCopy;
 
     private int currentAccount;
     private long botId;
@@ -528,11 +530,6 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
         webViewContainer.setOnVerifiedAge(onVerifiedAge);
         webViewContainer.setDelegate(new BotWebViewContainer.Delegate() {
             private boolean sentWebViewData;
-
-            @Override
-            public void onGetTextToCopy(String text) {
-                textToCopy = text;
-            }
 
             @Override
             public void onCloseRequested(Runnable callback) {
@@ -1360,7 +1357,6 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
         this.silent = props.silent;
         this.buttonText = props.buttonText;
         this.currentWebApp = props.app;
-        this.textToCopy = null;
 
         final TLRPC.User userbot = MessagesController.getInstance(currentAccount).getUser(botId);
         CharSequence title = UserObject.getUserName(userbot);
@@ -1640,6 +1636,24 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
                         }
                     }), ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
                     break;
+                }
+                case TYPE_WEB_VIEW_GUARD: {
+                    TLRPC.TL_messages_requestChatJoinWebView req = new TLRPC.TL_messages_requestChatJoinWebView();
+                    req.platform = "android";
+                    req.query_id = props.queryId;
+                    if (themeParams != null) {
+                        req.theme_params = new TLRPC.TL_dataJSON();
+                        req.theme_params.data = themeParams.toString();
+                    }
+
+                    ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (response2, error2) -> {
+                        if (error2 != null) {
+
+                        } else if (requestProps != null) {
+                            requestProps.applyResponse(response2);
+                            loadFromResponse();
+                        }
+                    }, ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
                 }
             }
         }

@@ -42,6 +42,7 @@ import java.util.Locale;
 import tw.nekomimi.nekogram.helpers.MessageHelper;
 import tw.nekomimi.nekogram.helpers.UserHelper;
 import tw.nekomimi.nekogram.settings.BaseNekoSettingsActivity;
+import tw.nekomimi.nekogram.tlv.TlViewer;
 
 public class MessageDetailsActivity extends BaseNekoSettingsActivity implements NotificationCenter.NotificationCenterDelegate {
 
@@ -87,6 +88,8 @@ public class MessageDetailsActivity extends BaseNekoSettingsActivity implements 
     private final int shouldBlockMessageRow = rowId++;
     private final int languageRow = rowId++;
     private final int linkOrEmojiOnlyRow = rowId++;
+
+    private final int exportRow = rowId++;
 
     public MessageDetailsActivity(MessageObject messageObject) {
         this.messageObject = messageObject;
@@ -175,6 +178,10 @@ public class MessageDetailsActivity extends BaseNekoSettingsActivity implements 
 
     @Override
     public Integer getSelectorColor(int position) {
+        var item = listView.adapter.getItem(position);
+        if (item.id == exportRow) {
+            return Theme.multAlpha(getThemedColor(Theme.key_switchTrackChecked), .1f);
+        }
         return super.getSelectorColor(position);
     }
 
@@ -344,6 +351,8 @@ public class MessageDetailsActivity extends BaseNekoSettingsActivity implements 
         if (!TextUtils.isEmpty(messageObject.messageOwner.message) && MessageHelper.isLinkOrEmojiOnlyMessage(messageObject)) {
             items.add(TextDetailSettingsCellFactory.of(linkOrEmojiOnlyRow, "Link or emoji only", "Yes"));
         }
+
+        items.add(TextSettingsCellFactory.of(exportRow, LocaleController.getString(R.string.ViewAsJson)).accent());
         items.add(UItem.asShadow(null));
     }
 
@@ -464,13 +473,16 @@ public class MessageDetailsActivity extends BaseNekoSettingsActivity implements 
             }
 
             showDialog(dialog);
+        } else if (id == exportRow) {
+            TlViewer.openTlViewer(this,
+                    messageObject.currentEvent != null ? messageObject.currentEvent : messageObject.messageOwner);
         }
     }
 
     @Override
     protected boolean onItemLongClick(UItem item, View view, int position, float x, float y) {
         var id = item.id;
-        if (item.viewType != UniversalAdapter.VIEW_TYPE_SHADOW) {
+        if (item.viewType != UniversalAdapter.VIEW_TYPE_SHADOW && id != exportRow) {
             if (!noforwards || !(id == messageRow || id == captionRow || id == filePathRow)) {
                 var text = ((TextDetailSettingsCell) view).getValueTextView().getText();
                 AndroidUtilities.addToClipboard(text);

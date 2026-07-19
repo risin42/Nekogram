@@ -177,6 +177,7 @@ import me.vkryl.core.reference.ReferenceList;
 
 import tw.nekomimi.nekogram.MessageDetailsActivity;
 import tw.nekomimi.nekogram.NekoConfig;
+import tw.nekomimi.nekogram.tlv.TlViewer;
 
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -2379,8 +2380,10 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
 
     private boolean processSelectedOptionLongClick(int option) {
         switch (option) {
-            case OPTION_DETAILS:
-                return false;
+            case OPTION_DETAILS: {
+                TlViewer.openTlViewer(this, selectedObject.currentEvent);
+                return true;
+            }
         }
         return false;
     }
