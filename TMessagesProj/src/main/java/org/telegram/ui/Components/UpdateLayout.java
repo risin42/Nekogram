@@ -25,8 +25,6 @@ import org.telegram.ui.IUpdateLayout;
 
 import java.io.File;
 
-import tw.nekomimi.nekogram.helpers.ApkInstaller;
-
 public class UpdateLayout extends IUpdateLayout {
 
     private FrameLayout updateLayout;
@@ -78,7 +76,7 @@ public class UpdateLayout extends IUpdateLayout {
                 FileLoader.getInstance(currentAccount).cancelLoadFile(SharedConfig.pendingAppUpdate.document);
                 updateAppUpdateViews(currentAccount, true);
             } else {
-                ApkInstaller.installUpdate(activity, SharedConfig.pendingAppUpdate.document);
+                AndroidUtilities.openForView(SharedConfig.pendingAppUpdate.document, true, activity);
             }
         });
 
