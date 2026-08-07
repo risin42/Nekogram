@@ -756,7 +756,7 @@ public class NekoConfig {
 
     public static void setDoubleTapInAction(int value) {
         doubleTapInAction = value;
-        preferences.edit().putInt("doubleTapInAction", value).apply();
+        preferences.edit().putInt("doubleTapAction", value).apply();
     }
 
     public static void setDoubleTapOutAction(int value) {
@@ -766,7 +766,7 @@ public class NekoConfig {
 
     public static void setDownloadSpeedBoost(int value) {
         downloadSpeedBoost = value;
-        preferences.edit().putInt("downloadSpeedBoost", value).apply();
+        preferences.edit().putInt("downloadSpeedBoost2", value).apply();
     }
 
     public static void setIdType(int value) {
@@ -791,7 +791,7 @@ public class NekoConfig {
 
     public static void setTabsTitleType(int value) {
         tabsTitleType = value;
-        preferences.edit().putInt("tabsTitleType", value).apply();
+        preferences.edit().putInt("tabsTitleType2", value).apply();
     }
 
     public static void setTranscribeProvider(int value) {
@@ -931,7 +931,7 @@ public class NekoConfig {
 
     public static void toggleIgnoreBlocked() {
         ignoreBlocked = !ignoreBlocked;
-        preferences.edit().putBoolean("ignoreBlocked", ignoreBlocked).apply();
+        preferences.edit().putBoolean("ignoreBlocked2", ignoreBlocked).apply();
     }
 
     public static void toggleIgnoreContentRestriction() {
@@ -1126,7 +1126,7 @@ public class NekoConfig {
 
     public static void setTranslationProvider(String value) {
         translationProvider = value;
-        preferences.edit().putString("translationProvider", value).apply();
+        preferences.edit().putString("translationProvider2", value).apply();
     }
 
     public static void setTranslationTarget(String value) {
