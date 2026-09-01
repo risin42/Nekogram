@@ -1670,6 +1670,21 @@ public class ItemOptions {
         return this;
     }
 
+    public static void setGapBackgroundColor(ViewGroup viewGroup, int color) {
+        if (viewGroup == null) {
+            return;
+        }
+
+        for (int j = 0; j < viewGroup.getChildCount(); ++j) {
+            final View child = viewGroup.getChildAt(j);
+            if (child instanceof ActionBarPopupWindow.GapView) {
+                ((ActionBarPopupWindow.GapView) child).setColor(color);
+            } else if (child instanceof ViewGroup) {
+                setGapBackgroundColor((ViewGroup) child, color);
+            }
+        }
+    }
+    
     private Integer gapBackgroundColor;
     public ItemOptions setGapBackgroundColor(int color) {
         gapBackgroundColor = color;
@@ -1795,12 +1810,16 @@ public class ItemOptions {
     }
 
     public void dismiss() {
+        dismiss(true);
+    }
+
+    public void dismiss(boolean animated) {
         if (dontDismiss) {
             dontDismiss = false;
             return;
         }
         if (actionBarPopupWindow != null) {
-            actionBarPopupWindow.dismiss();
+            actionBarPopupWindow.dismiss(animated);
         } else if (dismissListener != null) {
             dismissListener.run();
         }
@@ -2252,6 +2271,12 @@ public class ItemOptions {
                 onChange.run(album);
             });
             collectionsLayout.addView(subitem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        }
+    }
+
+    public void bringDimViewToFront() {
+        if (dimView != null) {
+            dimView.bringToFront();
         }
     }
 }

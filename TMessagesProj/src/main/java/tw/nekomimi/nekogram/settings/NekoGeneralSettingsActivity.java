@@ -10,6 +10,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 
@@ -17,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import tw.nekomimi.nekogram.NekoConfig;
-import tw.nekomimi.nekogram.helpers.PopupHelper;
 import tw.nekomimi.nekogram.translator.Translator;
 import tw.nekomimi.nekogram.translator.TranslatorApps;
+import tw.nekomimi.nekogram.translator.deepl.DeepLOAuth;
 
 public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
 
@@ -28,6 +29,7 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
     private final int showOriginalRow = rowId++;
     private final int translatorTypeRow = rowId++;
     private final int translatorExternalAppRow = rowId++;
+    private final int deeplAuthRow = rowId++;
     private final int translationProviderRow = rowId++;
     private final int translationTargetRow = rowId++;
     private final int doNotTranslateRow = rowId++;
@@ -104,6 +106,22 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
         return app == null ? "" : app.title;
     }
 
+    private CharSequence getDeepLState() {
+        var idInfo = DeepLOAuth.getIdInfo();
+        if (idInfo == null) {
+            return LocaleController.getString(R.string.BotAuthLogin);
+        } else {
+            var email = idInfo.email;
+            var atIndex = email.indexOf('@');
+            var localPart = email.substring(0, atIndex);
+            var domainPart = email.substring(atIndex);
+            var visiblePart = localPart.length() <= 3
+                    ? localPart
+                    : localPart.substring(0, 3);
+            return visiblePart + "..." + domainPart;
+        }
+    }
+
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(LocaleController.getString(R.string.Connection)));
@@ -117,6 +135,9 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
                 items.add(UItem.asCheck(showOriginalRow, LocaleController.getString(R.string.TranslatorShowOriginal)).slug("showOriginalRow").setChecked(NekoConfig.showOriginal));
             }
             items.add(TextSettingsCellFactory.of(translationProviderRow, LocaleController.getString(R.string.TranslationProviderShort), getTranslationProvider()).slug("translationProvider"));
+            if (Translator.PROVIDER_DEEPL.equals(NekoConfig.translationProvider)) {
+                items.add(TextSettingsCellFactory.of(deeplAuthRow, LocaleController.getString(R.string.ProviderDeepLTranslate), getDeepLState()).slug("deeplAUth"));
+            }
             items.add(TextSettingsCellFactory.of(translationTargetRow, LocaleController.getString(R.string.TranslationTarget), getTranslationTarget()).slug("translationTarget"));
             items.add(TextSettingsCellFactory.of(doNotTranslateRow, LocaleController.getString(R.string.DoNotTranslate), getRestrictedLanguages()).slug("doNotTranslate"));
             items.add(UItem.asCheck(autoTranslateRow, LocaleController.getString(R.string.AutoTranslate), LocaleController.getString(R.string.AutoTranslateAbout)).slug("autoTranslate").setChecked(NekoConfig.autoTranslate));
@@ -174,30 +195,32 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
             types.add(1);
             arrayList.add(LocaleController.getString(R.string.LastFirst));
             types.add(2);
-            PopupHelper.show(arrayList, LocaleController.getString(R.string.NameOrder), types.indexOf(NekoConfig.nameOrder), getParentActivity(), view, i -> {
+            showPopup(arrayList, types.indexOf(NekoConfig.nameOrder), item, view, i -> {
                 NekoConfig.setNameOrder(types.get(i));
-                item.textValue = arrayList.get(i);
                 listView.adapter.notifyItemChanged(position, PARTIAL);
                 parentLayout.rebuildAllFragmentViews(false, false);
-            }, resourcesProvider);
+            });
         } else if (id == translationProviderRow) {
-            Translator.showTranslationProviderSelector(getParentActivity(), view, param -> {
+            var oldProvider = NekoConfig.translationProvider;
+            Translator.showTranslationProviderSelector(this, view, param -> {
                 item.textValue = getTranslationProvider();
-                if (param) {
-                    listView.adapter.notifyItemChanged(position, PARTIAL);
-                } else {
-                    listView.adapter.notifyItemChanged(position, PARTIAL);
-                    notifyItemChanged(translationTargetRow, PARTIAL);
-                }
-            }, resourcesProvider);
-        } else if (id == translationTargetRow) {
-            Translator.showTranslationTargetSelector(this, view, () -> {
-                item.textValue = getTranslationTarget();
                 listView.adapter.notifyItemChanged(position, PARTIAL);
-                if (Translator.getRestrictedLanguages().size() == 1) {
-                    notifyItemChanged(doNotTranslateRow, PARTIAL);
+                if (!param) {
+                    updateLanguageItems();
                 }
-            }, resourcesProvider);
+                var newProvider = NekoConfig.translationProvider;
+                if (!oldProvider.equals(newProvider)) {
+                    if (Translator.PROVIDER_DEEPL.equals(oldProvider)) {
+                        notifyItemRemoved(deeplAuthRow);
+                        updateRows();
+                    } else if (Translator.PROVIDER_DEEPL.equals(newProvider)) {
+                        updateRows();
+                        notifyItemInserted(deeplAuthRow);
+                    }
+                }
+            });
+        } else if (id == translationTargetRow) {
+            Translator.showTranslationTargetSelector(this, view, this::updateLanguageItems);
         } else if (id == openArchiveOnPullRow) {
             NekoConfig.toggleOpenArchiveOnPull();
             if (view instanceof TextCheckCell) {
@@ -217,12 +240,11 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
             types.add(NekoConfig.ID_TYPE_API);
             arrayList.add(LocaleController.getString(R.string.IdTypeBOTAPI));
             types.add(NekoConfig.ID_TYPE_BOTAPI);
-            PopupHelper.show(arrayList, LocaleController.getString(R.string.IdType), types.indexOf(NekoConfig.idType), getParentActivity(), view, i -> {
+            showPopup(arrayList, types.indexOf(NekoConfig.idType), item, view, i -> {
                 NekoConfig.setIdType(types.get(i));
-                item.textValue = arrayList.get(i);
                 listView.adapter.notifyItemChanged(position, PARTIAL);
                 parentLayout.rebuildAllFragmentViews(false, false);
-            }, resourcesProvider);
+            });
         } else if (id == accentAsNotificationColorRow) {
             NekoConfig.toggleAccentAsNotificationColor();
             if (view instanceof TextCheckCell) {
@@ -235,13 +257,16 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
             }
         } else if (id == translatorTypeRow) {
             int oldType = NekoConfig.transType;
-            Translator.showTranslatorTypeSelector(getParentActivity(), view, () -> {
+            Translator.showTranslatorTypeSelector(this, view, () -> {
                 int newType = NekoConfig.transType;
                 item.textValue = getTranslatorType();
                 listView.adapter.notifyItemChanged(position, PARTIAL);
                 if (oldType != newType) {
                     int count = 4;
                     if (oldType == NekoConfig.TRANS_TYPE_NEKO || newType == NekoConfig.TRANS_TYPE_NEKO) {
+                        count++;
+                    }
+                    if (Translator.PROVIDER_DEEPL.equals(NekoConfig.translationProvider)) {
                         count++;
                     }
                     if (oldType == NekoConfig.TRANS_TYPE_EXTERNAL) {
@@ -260,7 +285,7 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
                         notifyItemInserted(showOriginalRow);
                     }
                 }
-            }, resourcesProvider);
+            });
         } else if (id == doNotTranslateRow) {
             presentFragment(new NekoLanguagesSelectActivity(NekoLanguagesSelectActivity.TYPE_RESTRICTED));
         } else if (id == autoTranslateRow) {
@@ -274,10 +299,43 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
                 ((TextCheckCell) view).setChecked(NekoConfig.showOriginal);
             }
         } else if (id == translatorExternalAppRow) {
-            Translator.showTranslationProviderSelector(getParentActivity(), view, param -> {
+            Translator.showTranslationProviderSelector(this, view, param -> {
                 item.textValue = getTranslatorExternalApp();
                 listView.adapter.notifyItemChanged(position, PARTIAL);
-            }, resourcesProvider);
+            });
+        } else if (id == deeplAuthRow) {
+            var idInfo = DeepLOAuth.getIdInfo();
+            if (idInfo != null) {
+                var options = ItemOptions.makeOptions(this, view);
+                options.setScrimViewBackground(listView.getClipBackground(view));
+                options.addText(idInfo.email, 13);
+                options.addGap();
+                options.add(R.drawable.msg_leave, LocaleController.getString(R.string.LogOut), true, () -> {
+                    DeepLOAuth.clearToken();
+                    item.textValue = getDeepLState();
+                    listView.adapter.notifyItemChanged(position, PARTIAL);
+                });
+                options.show();
+            } else {
+                DeepLOAuth.startOAuth(this, () -> {
+                    item.textValue = getDeepLState();
+                    notifyItemChanged(deeplAuthRow, PARTIAL);
+                });
+            }
+        }
+    }
+
+    private void updateLanguageItems() {
+        if (listView == null) return;
+        var restrictedLanguageItem = listView.findItemByItemId(doNotTranslateRow);
+        if (restrictedLanguageItem != null) {
+            restrictedLanguageItem.textValue = getRestrictedLanguages();
+            notifyItemChanged(doNotTranslateRow, PARTIAL);
+        }
+        var translationTargetItem = listView.findItemByItemId(translationTargetRow);
+        if (translationTargetItem != null) {
+            translationTargetItem.textValue = getTranslationTarget();
+            notifyItemChanged(translationTargetRow, PARTIAL);
         }
     }
 
@@ -294,17 +352,6 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (listView != null) {
-            var restrictedLanguageItem = listView.findItemByItemId(doNotTranslateRow);
-            if (restrictedLanguageItem != null) {
-                restrictedLanguageItem.textValue = getRestrictedLanguages();
-                notifyItemChanged(doNotTranslateRow, PARTIAL);
-            }
-            var translationTargetItem = listView.findItemByItemId(translationTargetRow);
-            if (translationTargetItem != null) {
-                translationTargetItem.textValue = getTranslationTarget();
-                notifyItemChanged(translationTargetRow, PARTIAL);
-            }
-        }
+        updateLanguageItems();
     }
 }

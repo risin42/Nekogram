@@ -14,13 +14,7 @@ ABI_ORDER = ["arm64-v8a", "universal"]
 
 
 def find_apk(abi: str) -> Path | None:
-    for directory in artifacts_path.glob("*"):
-        if not directory.is_dir():
-            continue
-        for apk in directory.glob("*.apk"):
-            if abi in apk.name:
-                return apk
-    return None
+    return next((apk for apk in artifacts_path.rglob("*.apk") if abi in apk.name), None)
 
 
 def get_apks() -> list[Path]:
@@ -70,11 +64,13 @@ def get_metadata() -> str:
 
 def retry(func):
     async def wrapper(*args, **kwargs):
-        for _ in range(3):
+        for attempt in range(3):
             try:
                 return await func(*args, **kwargs)
             except Exception as exc:
                 print(exc)
+                if attempt == 2:
+                    raise
 
     return wrapper
 

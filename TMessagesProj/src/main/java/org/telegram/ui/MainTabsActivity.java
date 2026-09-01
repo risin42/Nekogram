@@ -88,7 +88,8 @@ import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import tw.nekomimi.nekogram.BackButtonMenuRecent;
 import tw.nekomimi.nekogram.NekoConfig;
-import tw.nekomimi.nekogram.helpers.PasscodeHelper;
+import tw.nekomimi.nekogram.folder.FolderIconHelper;
+import tw.nekomimi.nekogram.helpers.AccountsHelper;
 
 public class MainTabsActivity extends ViewPagerActivity implements NotificationCenter.NotificationCenterDelegate, FactorAnimator.Target {
 
@@ -467,18 +468,21 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         if (getContext() == null || getParentActivity() == null) return false;
         final ArrayList<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
         if (filters == null || filters.size() <= 1) {
-            BackButtonMenuRecent.show(currentAccount, this, anchor, null);
+            BackButtonMenuRecent.show(this, anchor, true, null);
             return true;
         }
 
         final ItemOptions o = ItemOptions.makeOptions(this, anchor);
         o.add(R.drawable.msg_recent, getString(R.string.RecentChats), () -> {
             o.dismiss();
-            BackButtonMenuRecent.show(currentAccount, this, anchor, null);
+            BackButtonMenuRecent.show(this, anchor, false, null);
         });
         o.addGap();
         for (int i = 0; i < filters.size(); i++) {
             final MessagesController.DialogFilter folder = filters.get(i);
+            if (folder.isDefault() && NekoConfig.hideAllTab) {
+                continue;
+            }
             final ActionBarMenuSubItem folderItem = new ActionBarMenuSubItem(getParentActivity(), 2, false, false, getResourceProvider());
             folderItem.setPadding(dp(18), 0, dp(18), 0);
             CharSequence title = folder.isDefault() ? getString(R.string.FilterAllChats) : folder.name;
@@ -510,7 +514,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
             folderItem.setEmojiCacheType(folder.title_noanimate ? AnimatedEmojiDrawable.CACHE_TYPE_NOANIMATE_FOLDER : AnimatedEmojiDrawable.CACHE_TYPE_MESSAGES);
             final int color = getMessagesController().folderTags ? folder.color : -1;
-            folderItem.setTextAndIcon(title, 0, new FolderDrawable(getContext(), R.drawable.msg_folders, color));
+            folderItem.setTextAndIcon(title, 0, new FolderDrawable(getContext(), FolderIconHelper.getTabIcon(folder.emoticon), color));
             folderItem.getTextView().setEmojiColor(getThemedColor(Theme.key_featuredStickers_addButton));
             folderItem.setMinimumWidth(160);
             folderItem.setOnClickListener(e -> {
@@ -613,26 +617,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     }
 
     public boolean openAccountSelector(View button) {
-        final ArrayList<Integer> accountNumbers = new ArrayList<>();
-
-        accountNumbers.clear();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-            if (PasscodeHelper.isAccountHidden(a)) continue;
-            if (UserConfig.getInstance(a).isClientActivated()) {
-                accountNumbers.add(a);
-            }
-        }
-        Collections.sort(accountNumbers, (o1, o2) -> {
-            long l1 = UserConfig.getInstance(o1).loginTime;
-            long l2 = UserConfig.getInstance(o2).loginTime;
-            if (l1 > l2) {
-                return 1;
-            } else if (l1 < l2) {
-                return -1;
-            }
-            return 0;
-        });
-
         ItemOptions o = ItemOptions.makeOptions(this, button);
         if (UserConfig.getActivatedAccountsCount() < UserConfig.MAX_ACCOUNT_COUNT) {
             o.add(R.drawable.msg_addbot, getString(R.string.AddAccount), () -> {
@@ -661,21 +645,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             o.add(R.drawable.menu_download_round, "Dump Canvas", () -> AndroidUtilities.runOnUIThread(this::dumpCanvas, 1000));
         }
 
-        if (accountNumbers.size() > 0) {
-            if (o.getItemsCount() > 0) o.addGap();
-            for (int acc : accountNumbers) {
-                final int account = acc;
-                final View btn = accountView(acc, currentAccount == acc);
-                btn.setOnClickListener(v -> {
-                    if (currentAccount == account) return;
-                    o.dismiss();
-                    if (LaunchActivity.instance != null) {
-                        LaunchActivity.instance.switchToAccount(account, true);
-                    }
-                });
-                o.addView(btn, LayoutHelper.createLinear(230, 48));
-            }
-        }
+        AccountsHelper.fillAccountSelectorMenu(o, currentAccount, getContext(), resourceProvider, false);
 
         o.setBlur(true);
         o.translate(0, -dp(4));

@@ -210,6 +210,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     public boolean isSavedDialogCell;
     public DialogCellTags tags;
 
+    private final AvatarSpan senderAvatarSpan;
+
     public final StoriesUtilities.AvatarStoryParams storyParams = new StoriesUtilities.AvatarStoryParams(false) {
         @Override
         public boolean isAvatarClickable(long dialogId, TLRPC.Chat chat, TLRPC.User user) {
@@ -718,6 +720,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         emojiStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiStatusView, dp(22));
         botVerification = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(17));
         avatarImage.setAllowLoadingOnAttachedOnly(true);
+        senderAvatarSpan = new AvatarSpan(this, currentAccount);
+        senderAvatarSpan.needDrawShadow = false;
     }
 
     @Override
@@ -1800,6 +1804,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                 user != null && user.id == UserObject.VERIFY && message != null && message.getForwardedFromId() != null
                             ) {
                                 messageNameString = AndroidUtilities.escape(triedMessageName != null ? triedMessageName : getMessageNameString());
+                                messageNameString = addSenderAvatar(messageNameString, message);
                                 if (chat != null && chat.forum && !isTopic && !useFromUserAsAvatar) {
                                     CharSequence topicName = MessagesController.getInstance(currentAccount).getTopicsController().getTopicIconName(chat, message, currentMessagePaint);
                                     if (!TextUtils.isEmpty(topicName)) {
@@ -2948,6 +2953,20 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         updateThumbsPosition();
     }
 
+    private CharSequence addSenderAvatar(CharSequence messageNameString, MessageObject message) {
+        if (NekoConfig.miniSenderAvatar && !TextUtils.isEmpty(messageNameString)) {
+            var fromChatId = message.getFromChatId();
+            if (fromChatId != UserConfig.getInstance(currentAccount).getClientUserId()) {
+                var builder = new SpannableStringBuilder("\u200B ");
+                senderAvatarSpan.setDialogId(fromChatId);
+                builder.setSpan(senderAvatarSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                builder.append(messageNameString);
+                return builder;
+            }
+        }
+        return messageNameString;
+    }
+
     public void setTitleOverride(String s) {
         titleOverride = s;
     }
@@ -3905,14 +3924,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 canvas.drawRect(tx - dp(8), 0, getMeasuredWidth(), getMeasuredHeight(), Theme.dialogs_pinnedPaint);
                 if (currentRevealProgress == 0) {
                     if (Theme.dialogs_archiveDrawableRecolored) {
-                        Theme.dialogs_archiveDrawable.setLayerColor("Arrow.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
+                        Theme.dialogs_archiveDrawable.setLayerColor("Arrow", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
                         Theme.dialogs_archiveDrawableRecolored = false;
                     }
                     if (Theme.dialogs_hidePsaDrawableRecolored) {
                         Theme.dialogs_hidePsaDrawable.beginApplyLayerColors();
-                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 1.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
-                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 2.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
-                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 3.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
+                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 1", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
+                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 2", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
+                        Theme.dialogs_hidePsaDrawable.setLayerColor("Line 3", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
                         Theme.dialogs_hidePsaDrawable.commitApplyLayerColors();
                         Theme.dialogs_hidePsaDrawableRecolored = false;
                     }
@@ -3933,14 +3952,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 canvas.restore();
 
                 if (!Theme.dialogs_archiveDrawableRecolored) {
-                    Theme.dialogs_archiveDrawable.setLayerColor("Arrow.**", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
+                    Theme.dialogs_archiveDrawable.setLayerColor("Arrow", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
                     Theme.dialogs_archiveDrawableRecolored = true;
                 }
                 if (!Theme.dialogs_hidePsaDrawableRecolored) {
                     Theme.dialogs_hidePsaDrawable.beginApplyLayerColors();
-                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 1.**", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
-                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 2.**", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
-                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 3.**", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
+                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 1", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
+                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 2", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
+                    Theme.dialogs_hidePsaDrawable.setLayerColor("Line 3", Theme.getNonAnimatedColor(Theme.key_chats_archivePinBackground));
                     Theme.dialogs_hidePsaDrawable.commitApplyLayerColors();
                     Theme.dialogs_hidePsaDrawableRecolored = true;
                 }
