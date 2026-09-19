@@ -66,7 +66,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.util.Property;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -1035,7 +1034,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         public RecordDot(Context context) {
             super(context);
             int resId = R.raw.chat_audio_record_delete_2;
-            drawable = new RLottieDrawable(resId, "" + resId, dp(28), dp(28), false, null);
+            drawable = new RLottieDrawable(resId, dp(28), dp(28), false, null);
             drawable.setInvalidateOnProgressSet(true);
             updateColors();
         }
@@ -3857,7 +3856,7 @@ public class ChatActivityEnterView extends FrameLayout implements
             }
             delegate.didPressSuggestionButton();
         });
-        suggestButton.setContentDescription(getString(R.string.AccDescrAttachButton));
+        suggestButton.setContentDescription(getString(R.string.PostSuggestionsOfferTitle));
     }
 
     private boolean suggestButtonVisible;
@@ -5765,6 +5764,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         };
         if (parentFragment != null && !isEditingBusinessLink()) {
             ImeHelper.enableSogouExpression(messageEditText);
+            ImeHelper.enableGboardEmoji(messageEditText);
             ViewCompat.setOnReceiveContentListener(messageEditText, new String[]{"image/gif", "image/*", "image/jpg", "image/png", "image/webp"}, (view, payload) -> {
                 var split = payload.partition(
                         item -> item.getUri() != null);

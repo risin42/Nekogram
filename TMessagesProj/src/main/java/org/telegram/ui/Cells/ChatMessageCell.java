@@ -39,7 +39,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -74,7 +73,6 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.util.Property;
 import android.util.SparseArray;
@@ -251,6 +249,7 @@ import tw.nekomimi.nekogram.NekoConfig;
 import tw.nekomimi.nekogram.accessibility.AccConfig;
 import tw.nekomimi.nekogram.helpers.MessageFilterHelper;
 import tw.nekomimi.nekogram.helpers.MessageHelper;
+import tw.nekomimi.nekogram.helpers.WebpageHelper;
 import tw.nekomimi.nekogram.helpers.WhisperHelper;
 
 import java.io.File;
@@ -6603,6 +6602,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             } else {
                 mediaSpoilerEffect2.attach(this);
             }
+        } else if (currentMessageObject.hasMediaSpoilers() && SpoilerEffect2.supports()) {
+            mediaSpoilerEffect2 = makeSpoilerEffect();
+            if (mediaSpoilerEffect2Index != null) {
+                mediaSpoilerEffect2.reassignAttach(this, mediaSpoilerEffect2Index);
+            }
         }
         if (channelRecommendationsCell != null) {
             channelRecommendationsCell.onAttachedToWindow();
@@ -7692,7 +7696,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     }
                 } else if (siteName != null) {
                     siteName = siteName.toLowerCase();
-                    if ((siteName.equals("instagram") || siteName.equals("twitter") || "telegram_album".equals(webpageType) || "telegram_story_album".equals(webpageType)) && webpage.cached_page instanceof TL_iv.TL_page &&
+                    if ((siteName.equals("instagram") || WebpageHelper.isXFormerlyTwitter(siteName) || "telegram_album".equals(webpageType) || "telegram_story_album".equals(webpageType)) && webpage.cached_page instanceof TL_iv.TL_page &&
                             (webpage.photo instanceof TLRPC.TL_photo || MessageObject.isVideoDocument(webpage.document))) {
                         drawInstantView = false;
                         slideshow = true;
@@ -8180,7 +8184,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                                 totalHeight += dp(2);
                             }
                             int restLines = 0;
-                            boolean allowAllLines = site_name != null && site_name.toString().toLowerCase().equals("twitter");
+                            boolean allowAllLines = site_name != null && WebpageHelper.isXFormerlyTwitter(site_name.toString().toLowerCase());
                             CharSequence text = overrideDescrption != null ? overrideDescrption : messageObject.linkDescription;
                             boolean isRTL = AndroidUtilities.isRTL(text);
                             int maxLines = allowAllLines ? 100 : (currentMessageObject.isRepostPreview ? 3 : 6);
@@ -15391,7 +15395,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 final float s = (1f - scale) * .7f;
                 canvas.scale(s, s, radialProgress.progressRect.centerX(), AndroidUtilities.lerp(radialProgress.progressRect.top, radialProgress.progressRect.bottom, .5f));
                 if (onceFire == null) {
-                    onceFire = new RLottieDrawable(R.raw.fire_once, "fire_once", dp(32), dp(32), true, null);
+                    onceFire = new RLottieDrawable(R.raw.fire_once, dp(32), dp(32), true, null);
                     onceFire.setMasterParent(this);
                     onceFire.setAllowDecodeSingleFrame(true);
                     onceFire.setAutoRepeat(1);
@@ -16815,7 +16819,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
         final TranslateController translateController = MessagesController.getInstance(currentAccount).getTranslateController();
         final boolean translating = currentMessageObject.translating || translateController.isTranslating(currentMessageObject);
-        final boolean shouldTranslate = currentMessageObject != null && TranslateController.isTranslatable(currentMessageObject, currentMessageObject.manually) && (translateController.isTranslatingDialog(currentMessageObject.getDialogId()) || currentMessageObject.manually);
+        final boolean shouldTranslate = currentMessageObject != null && TranslateController.isTranslatable(currentMessageObject, currentMessageObject.translating) && (translateController.isTranslatingDialog(currentMessageObject.getDialogId()) || currentMessageObject.translating);
         final boolean shouldSummarize = currentMessageObject != null && currentMessageObject.messageOwner.summarizedOpen;
         final boolean isFinal = shouldTranslate == (currentMessageObject != null && currentMessageObject.translated) && shouldSummarize == (currentMessageObject != null && currentMessageObject.summarized);
         if (origin == !isFinal) {

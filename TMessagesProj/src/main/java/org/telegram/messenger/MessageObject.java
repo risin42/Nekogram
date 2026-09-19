@@ -128,6 +128,7 @@ import java.util.regex.Pattern;
 import tw.nekomimi.nekogram.NekoConfig;
 import tw.nekomimi.nekogram.helpers.MessageFilterHelper;
 import tw.nekomimi.nekogram.helpers.MessageHelper;
+import tw.nekomimi.nekogram.helpers.WebpageHelper;
 import tw.nekomimi.nekogram.syntaxhighlight.SyntaxHighlight;
 import tw.nekomimi.nekogram.translator.Translator;
 
@@ -7498,7 +7499,7 @@ public class MessageObject {
                 }
                 if ("instagram".equals(siteName)) {
                     hashtagsType = 1;
-                } else if ("twitter".equals(siteName)) {
+                } else if (WebpageHelper.isXFormerlyTwitter(siteName)) {
                     hashtagsType = 2;
                 }
             } else if (getMedia(messageOwner) instanceof TLRPC.TL_messageMediaGame && getMedia(messageOwner).game.description != null) {

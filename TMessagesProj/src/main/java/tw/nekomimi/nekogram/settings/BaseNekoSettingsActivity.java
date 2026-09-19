@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,14 +39,15 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.URLSpanNoUnderline;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalRecyclerView;
 import org.telegram.ui.Components.blur3.DownscaleScrollableNoiseSuppressor;
+import org.telegram.ui.Components.blur3.RenderNodeWithHash;
 import org.telegram.ui.Components.blur3.ViewGroupPartRenderer;
 import org.telegram.ui.Components.blur3.capture.IBlur3Capture;
+import org.telegram.ui.Components.blur3.capture.IBlur3Hash;
 import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
 
     protected static final Object PARTIAL = new Object();
 
-    protected SizeNotifierFrameLayout contentView;
+    protected FrameLayout contentView;
     protected UniversalRecyclerView listView;
     protected LinearLayoutManager layoutManager;
     protected Theme.ResourcesProvider resourcesProvider;
@@ -81,6 +81,21 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             scrollableViewNoiseSuppressor = new DownscaleScrollableNoiseSuppressor();
             iBlur3SourceGlassFrosted = new BlurredBackgroundSourceRenderNode(null);
+            iBlur3SourceGlassFrosted.setupRenderer(new RenderNodeWithHash.Renderer() {
+                @Override
+                public void renderNodeCalculateHash(IBlur3Hash hash) {
+                    hash.add(getThemedColor(Theme.key_windowBackgroundWhite));
+                    hash.add(SharedConfig.chatBlurEnabled());
+                }
+
+                @Override
+                public void renderNodeUpdateDisplayList(Canvas canvas) {
+                    canvas.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    if (SharedConfig.chatBlurEnabled()) {
+                        scrollableViewNoiseSuppressor.draw(canvas, DownscaleScrollableNoiseSuppressor.DRAW_FROSTED_GLASS);
+                    }
+                }
+            });
         } else {
             scrollableViewNoiseSuppressor = null;
             iBlur3SourceGlassFrosted = null;
@@ -89,42 +104,17 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
-        contentView = new SizeNotifierFrameLayout(context) {
+        contentView = new FrameLayout(context) {
             @Override
-            protected void dispatchDraw(Canvas canvas) {
-                if (Build.VERSION.SDK_INT >= 31 && scrollableViewNoiseSuppressor != null) {
+            protected void dispatchDraw(@NonNull Canvas canvas) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     blur3_InvalidateBlur();
-
-                    final int width = getMeasuredWidth();
-                    final int height = getMeasuredHeight();
-                    if (iBlur3SourceGlassFrosted != null && !iBlur3SourceGlassFrosted.inRecording()) {
-                        final Canvas c = iBlur3SourceGlassFrosted.beginRecording(width, height);
-                        c.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
-                        if (SharedConfig.chatBlurEnabled()) {
-                            scrollableViewNoiseSuppressor.draw(c, DownscaleScrollableNoiseSuppressor.DRAW_FROSTED_GLASS);
-                        }
-                        iBlur3SourceGlassFrosted.endRecording();
+                    if (iBlur3SourceGlassFrosted != null) {
+                        iBlur3SourceGlassFrosted.setSize(getMeasuredWidth(), getMeasuredHeight());
+                        iBlur3SourceGlassFrosted.updateDisplayListIfNeeded();
                     }
                 }
                 super.dispatchDraw(canvas);
-            }
-
-            @Override
-            public void drawBlurRect(Canvas canvas, float y, Rect rectTmp, Paint blurScrimPaint, boolean top) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !SharedConfig.chatBlurEnabled() || iBlur3SourceGlassFrosted == null) {
-                    canvas.drawRect(rectTmp, blurScrimPaint);
-                    return;
-                }
-
-                canvas.save();
-                canvas.translate(0, -y);
-                iBlur3SourceGlassFrosted.draw(canvas, rectTmp.left, rectTmp.top + y, rectTmp.right, rectTmp.bottom + y);
-                canvas.restore();
-
-                final int oldScrimAlpha = blurScrimPaint.getAlpha();
-                blurScrimPaint.setAlpha(ChatActivity.ACTION_BAR_BLUR_ALPHA);
-                canvas.drawRect(rectTmp, blurScrimPaint);
-                blurScrimPaint.setAlpha(oldScrimAlpha);
             }
         };
         contentView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
@@ -177,15 +167,23 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
 
         actionBarBackground = new View(context) {
             private final Paint blurScrimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            private final RectF rect = new RectF();
 
             @Override
             protected void onDraw(@NonNull Canvas canvas) {
-                var top = actionBarContainer.getHeight();
-                AndroidUtilities.rectTmp2.set(0, 0, getMeasuredWidth(), top);
-                blurScrimPaint.setColor(Theme.getColor(Theme.key_actionBarDefault, resourceProvider));
-                contentView.drawBlurRect(canvas, 0, AndroidUtilities.rectTmp2, blurScrimPaint, true);
-                if (getParentLayout() != null) {
-                    getParentLayout().drawHeaderShadow(canvas, top);
+                var actionBarHeight = actionBarContainer.getMeasuredHeight();
+                rect.set(0, 0, getMeasuredWidth(), actionBarHeight);
+                blurScrimPaint.setColor(Theme.getColor(Theme.key_actionBarDefault, resourcesProvider));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && iBlur3SourceGlassFrosted != null) {
+                    iBlur3SourceGlassFrosted.draw(canvas, rect.left, rect.top, rect.right, rect.bottom);
+                    canvas.saveLayerAlpha(rect, ChatActivity.ACTION_BAR_BLUR_ALPHA);
+                    canvas.drawRect(rect, blurScrimPaint);
+                    canvas.restore();
+                } else {
+                    canvas.drawRect(rect, blurScrimPaint);
+                }
+                if (parentLayout != null) {
+                    parentLayout.drawHeaderShadow(canvas, actionBarHeight);
                 }
             }
         };
@@ -207,7 +205,7 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
     }
 
     protected void createSearchItem(ActionBarMenu menu, ActionBarMenuItem.ActionBarMenuItemSearchListener searchListener) {
-        searchItem = menu.addItem(0, R.drawable.outline_header_search, resourceProvider).setIsSearchField(true).setActionBarMenuItemSearchListener(searchListener);
+        searchItem = menu.addItem(0, R.drawable.outline_header_search, resourcesProvider).setIsSearchField(true).setActionBarMenuItemSearchListener(searchListener);
         searchItem.setSearchFieldHint(LocaleController.getString(R.string.Search));
         searchItem.setContentDescription(LocaleController.getString(R.string.Search));
     }
@@ -276,6 +274,11 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
             resourcesProvider = layout.getLastFragment().getResourceProvider();
         }
         super.setParentLayout(layout);
+    }
+
+    @Override
+    public Theme.ResourcesProvider getResourceProvider() {
+        return resourcesProvider;
     }
 
     @Override
@@ -377,7 +380,7 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
                 return position;
             });
         } else {
-            unknown.run();
+            if (unknown != null) unknown.run();
         }
     }
 

@@ -64,6 +64,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -125,6 +126,7 @@ import android.window.OnBackInvokedDispatcher;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
@@ -138,18 +140,18 @@ import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import org.telegram.ui.recyclerview.LinearSmoothScrollerEnd;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.analytics.AnalyticsListener;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
-import com.google.android.exoplayer2.video.VideoSize;
+import androidx.media3.common.C;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.Format;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
+import androidx.media3.exoplayer.video.VideoFrameMetadataListener;
+import androidx.media3.common.VideoSize;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
@@ -345,6 +347,7 @@ import tw.nekomimi.nekogram.forward.ForwardItem;
 import tw.nekomimi.nekogram.helpers.LensHelper;
 import tw.nekomimi.nekogram.helpers.MessageHelper;
 import tw.nekomimi.nekogram.helpers.QrHelper;
+import tw.nekomimi.nekogram.helpers.WebpageHelper;
 import tw.nekomimi.nekogram.streaming.MediaStreamingProvider;
 import tw.nekomimi.nekogram.translator.Translator;
 import me.vkryl.android.animator.BoolAnimator;
@@ -353,6 +356,7 @@ import me.vkryl.core.reference.ReferenceList;
 
 @SuppressLint("WrongConstant")
 @SuppressWarnings("unchecked")
+@OptIn(markerClass = UnstableApi.class)
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector2.OnGestureListener, GestureDetector2.OnDoubleTapListener, IPipSourceDelegate, FactorAnimator.Target {
 
     private static final int ANIMATOR_ID_POLL_ATTACH_BUTTONS_VISIBLE = 0;
@@ -6107,13 +6111,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 if (prevOrientation == -10) {
                     prevOrientation = parentActivity.getRequestedOrientation();
                 }
-                WindowManager manager = (WindowManager) parentActivity.getSystemService(Activity.WINDOW_SERVICE);
-                int displayRotation = manager.getDefaultDisplay().getRotation();
-                if (displayRotation == Surface.ROTATION_270) {
-                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                } else {
-                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }
+                parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 toggleActionBar(false, false);
             });
         }
@@ -8897,6 +8895,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 onLinkLongPress.run(span, this, this::clearLinks);
             };
             this.textSelectionHelper = textSelectionHelper;
+            textSelectionHelper.setScrollingParent(scrollView);
             ViewHelper.setPadding(this, 16, 8, 16, 8);
             setLinkTextColor(0xff79c4fc);
             setTextColor(0xffffffff);
@@ -9046,6 +9045,16 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         @Override
         protected boolean verifyDrawable(@NonNull Drawable who) {
             return who == loadingDrawable || super.verifyDrawable(who);
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            if (textSelectionHelper != null && getStaticTextLayout() != null) {
+                textSelectionHelper.setSelectabeleView(this);
+                textSelectionHelper.update(getPaddingLeft(), getPaddingTop());
+                return textSelectionHelper.onTouchEvent(event);
+            }
+            return super.onTouchEvent(event);
         }
     }
 
@@ -10461,6 +10470,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         return;
                     }
                     if (parentActivity != null && fullscreenedByButton != 0) {
+                        var isAutoRotateOn = Settings.System.getInt(
+                                ApplicationLoader.applicationContext.getContentResolver(),
+                                Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+                        if (!isAutoRotateOn) {
+                            return;
+                        }
                         if (fullscreenedByButton == 1) {
                             if (orientation >= 270 - 30 && orientation <= 270 + 30) {
                                 wasRotated = true;
@@ -14187,7 +14202,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 String siteName = webPage.site_name;
                 if (siteName != null) {
                     siteName = siteName.toLowerCase();
-                    if (siteName.equals("instagram") || siteName.equals("twitter") || "telegram_album".equals(webPage.type)) {
+                    if (siteName.equals("instagram") || WebpageHelper.isXFormerlyTwitter(siteName) || "telegram_album".equals(webPage.type)) {
                         if (!TextUtils.isEmpty(webPage.author)) {
                             nameOverride = webPage.author;
                         }
@@ -16511,6 +16526,21 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
     }
 
+    private boolean parentHwLayerEnabled;
+    private void setParentHwLayerEnabled(boolean enabled) {
+        if (parentHwLayerEnabled != enabled) {
+            parentHwLayerEnabled = enabled;
+            if (parentFragment != null && parentFragment.getFragmentView() != null) {
+                View view = parentFragment.getFragmentView();
+                view.setLayerType(enabled ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+                if (parentAlert != null) {
+                    view = parentAlert.getContainer();
+                    view.setLayerType(enabled ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+                }
+            }
+        }
+    }
+
     private void checkProgress(int a, boolean scroll, boolean animated) {
         int index = currentIndex;
         if (a == 1) {
@@ -17604,6 +17634,13 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     dispatcher.registerOnBackInvokedCallback(
                         OnBackInvokedDispatcher.PRIORITY_DEFAULT,
                         () -> {
+                            if (textSelectionHelper.isInSelectionMode()) {
+                                textSelectionHelper.clear();
+                            }
+                            if (isCaptionOpen()) {
+                                closeCaptionEnter(true);
+                                return;
+                            }
                             if (parentActivity instanceof LaunchActivity) {
                                 ((LaunchActivity) parentActivity).onBackPressed();
                             } else {
@@ -19638,6 +19675,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (!LiteMode.isEnabled(LiteMode.FLAG_CHAT_SCALE)) {
                 scale = 1f;
             }
+            setParentHwLayerEnabled(Math.abs(scale - 1f) > 0.0001f);
             View view = parentFragment.getFragmentView();
             /*if (AndroidUtilities.isTablet() && parentFragment.getParentActivity() instanceof LaunchActivity) {
                 LaunchActivity activity = (LaunchActivity) parentFragment.getParentActivity();
@@ -21362,11 +21400,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     videoTimelineView.setMaxProgressDiff(1.0f);
                     videoTimelineView.setMode(VideoTimelinePlayView.MODE_VIDEO);
                 }
-//                muteItem.setContentDescription(getString("NoSound", R.string.NoSound));
+                muteButton.setContentDescription(getString(R.string.NoSound));
             } else {
                 actionBarContainer.setSubtitle(currentSubtitle);
                 muteDrawable.setMuted(false, true);
-//                muteItem.setContentDescription(getString("Sound", R.string.Sound));
+                muteButton.setContentDescription(getString(R.string.Sound));
                 if (compressItem.getTag() != null) {
                     compressItem.setAlpha(1.0f);
                     compressItem.setEnabled(true);

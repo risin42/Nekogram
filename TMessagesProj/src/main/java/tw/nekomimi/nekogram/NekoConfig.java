@@ -92,6 +92,7 @@ public class NekoConfig {
     public static boolean disableProximityEvents = false;
     public static boolean disableVoiceMessageAutoPlay = false;
     public static boolean forceFontWeightFallback = false;
+    public static boolean forceHttpStreaming = false;
     public static boolean formatTimeWithSeconds = false;
     public static boolean gooeyAvatarAnimation = true;
     public static boolean hideAllTab = false;
@@ -194,6 +195,7 @@ public class NekoConfig {
             disableProximityEvents = preferences.getBoolean("disableProximityEvents", false);
             disableVoiceMessageAutoPlay = preferences.getBoolean("disableVoiceMessageAutoPlay", false);
             forceFontWeightFallback = preferences.getBoolean("forceFontWeightFallback", false);
+            forceHttpStreaming = preferences.getBoolean("forceHttpStreaming", false);
             formatTimeWithSeconds = preferences.getBoolean("formatTimeWithSeconds", false);
             gooeyAvatarAnimation = preferences.getBoolean("gooeyAvatarAnimation", true);
             hideAllTab = preferences.getBoolean("hideAllTab", false);
@@ -340,6 +342,9 @@ public class NekoConfig {
         }
         if (preferences.contains("forceFontWeightFallback")) {
             object.addProperty("forceFontWeightFallback", preferences.getBoolean("forceFontWeightFallback", false));
+        }
+        if (preferences.contains("forceHttpStreaming")) {
+            object.addProperty("forceHttpStreaming", preferences.getBoolean("forceHttpStreaming", false));
         }
         if (preferences.contains("formatTimeWithSeconds")) {
             object.addProperty("formatTimeWithSeconds", preferences.getBoolean("formatTimeWithSeconds", false));
@@ -597,6 +602,9 @@ public class NekoConfig {
         }
         if (object.has("forceFontWeightFallback")) {
             editor.putBoolean("forceFontWeightFallback", object.get("forceFontWeightFallback").getAsBoolean());
+        }
+        if (object.has("forceHttpStreaming")) {
+            editor.putBoolean("forceHttpStreaming", object.get("forceHttpStreaming").getAsBoolean());
         }
         if (object.has("formatTimeWithSeconds")) {
             editor.putBoolean("formatTimeWithSeconds", object.get("formatTimeWithSeconds").getAsBoolean());
@@ -902,6 +910,11 @@ public class NekoConfig {
     public static void toggleForceFontWeightFallback() {
         forceFontWeightFallback = !forceFontWeightFallback;
         preferences.edit().putBoolean("forceFontWeightFallback", forceFontWeightFallback).apply();
+    }
+
+    public static void setForceHttpStreaming(boolean value) {
+        forceHttpStreaming = value;
+        preferences.edit().putBoolean("forceHttpStreaming", value).apply();
     }
 
     public static void toggleFormatTimeWithSeconds() {

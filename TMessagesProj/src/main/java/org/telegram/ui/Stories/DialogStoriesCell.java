@@ -336,12 +336,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         telegramLogoView = new AnimatedTextView(getContext(), true, true, false);
         telegramLogoView.setGravity(Gravity.LEFT);
         telegramLogoView.setTextColor(getTextColor());
-        telegramLogoView.setEllipsizeByGradient(true);
         telegramLogoView.setTypeface(AndroidUtilities.bold());
-        telegramLogoView.setPadding(0, dp(8), 0, dp(8));
         telegramLogoView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
         telegramLogoView.setText(TypefaceHelper.getTitleText());
-        addView(telegramLogoView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        addView(telegramLogoView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
         statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
         statusDrawable.center = true;
@@ -945,7 +943,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
 
             offset = (telegramLogoView.getMeasuredHeight() - telegramLogoView.getTextHeight()) / 2f;
             telegramLogoView.setTranslationX(titleView.getTranslationX() + dp(1));
-            telegramLogoView.setTranslationY(bottomY + dp(14) - offset + AndroidUtilities.dp(FAKE_TOP_PADDING) + translationOffset /*titleView.getTranslationY() + dpf2(37.33f)*/);
+            telegramLogoView.setTranslationY(bottomY + dp(14 + FAKE_TOP_PADDING) - offset + translationOffset /*titleView.getTranslationY() + dpf2(37.33f)*/);
 
             emojiStatusView.setTranslationX(titleView.getTranslationX() - dpf2(3.33f) + telegramLogoView.getMeasuredWidth());
             emojiStatusView.setTranslationY(bottomY + dp(14 - 11 + FAKE_TOP_PADDING + 4.333f) + translationOffset);
