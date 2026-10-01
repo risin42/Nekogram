@@ -158,33 +158,6 @@ public class Emoji {
                     try {
                         final EmojiPack emojiPack = EmojiPack.getInstance();
                         bitmap = emojiPack.getEmoji(page, page2);
-
-                        final int maskIndex = emojiPack.getMaskId(page, page2);
-                        if (bitmap != null && maskIndex != -1) {
-                            final Bitmap alphaBitmap = emojiPack.getMask(maskIndex);
-                            if (alphaBitmap != null) {
-                                final int w = bitmap.getWidth();
-                                final int h = bitmap.getHeight();
-
-                                final int[] rgbPixels = new int[w * h];
-                                final int[] alphaPixels = new int[w * h];
-
-                                bitmap.getPixels(rgbPixels, 0, w, 0, 0, w, h);
-                                alphaBitmap.getPixels(alphaPixels, 0, w, 0, 0, w, h);
-                                alphaBitmap.recycle();
-
-                                for (int i = 0; i < rgbPixels.length; i++) {
-                                    int c = rgbPixels[i];
-                                    c = (c & 0x00FFFFFF) | ((alphaPixels[i] & 0xFF) << 24);
-
-                                    rgbPixels[i] = c;
-                                }
-
-                                bitmap.recycle();
-                                bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                                bitmap.setPixels(rgbPixels, 0, w, 0, 0, w, h);
-                            }
-                        }
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -200,10 +173,6 @@ public class Emoji {
     }
 
     public static Bitmap loadBitmap(String path) {
-        return loadBitmap(path, true);
-    }
-
-    public static Bitmap loadBitmap(String path, boolean assets) {
         try {
             int imageResize;
             if (AndroidUtilities.density <= 1.0f) {
@@ -214,7 +183,7 @@ public class Emoji {
 
             Bitmap bitmap = null;
             try {
-                InputStream is = assets ? ApplicationLoader.applicationContext.getAssets().open(path) : new FileInputStream(path);
+                InputStream is = ApplicationLoader.applicationContext.getAssets().open(path);
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = false;
                 opts.inSampleSize = imageResize;
