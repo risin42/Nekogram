@@ -26,6 +26,10 @@ idea {
             file('jni/third_party/libyuv'),
             file('jni/third_party/openh264'),
             file('jni/third_party/xiph'),
+            file('jni/third_party/wamr'),
+            file('jni/third_party/libprisma'),
+            file('jni/third_party/boost-regex'),
+            file('jni/tgcalls'),
             file('jni/tlottie'),
             file('jni/voip/webrtc'),
             file('jni/sqlite')
@@ -41,7 +45,7 @@ configurations.configureEach {
 
 dependencies {
     implementation 'androidx.activity:activity:1.13.0'
-    implementation 'androidx.collection:collection:1.6.0'
+    implementation 'androidx.collection:collection:1.7.0'
     implementation 'androidx.fragment:fragment:1.9.1'
     implementation 'androidx.core:core:1.19.1'
     implementation 'androidx.palette:palette:1.0.0'
@@ -55,6 +59,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cast-framework:22.3.1'
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
     implementation 'com.google.zxing:core:3.5.4'
+    implementation 'com.neovisionaries:nv-websocket-client:2.14'
 
     implementation 'androidx.car.app:app:1.7.0'
     implementation 'androidx.car.app:app-projected:1.7.0'
@@ -76,7 +81,7 @@ dependencies {
     implementation 'com.google.mlkit:language-id:17.0.6'
     implementation 'com.android.billingclient:billing:9.1.0'
     implementation 'com.google.code.gson:gson:2.14.0'
-    implementation ('com.google.guava:guava:33.7.1-android') {
+    implementation ('com.google.guava:guava:33.7.2-android') {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
         exclude group: 'org.checkerframework', module: 'checker-compat-qual'
         exclude group: 'org.checkerframework', module: 'checker-qual'
@@ -98,7 +103,6 @@ dependencies {
     }
 
     api "androidx.media3:media3-exoplayer:1.11.1"
-    api "androidx.media3:media3-exoplayer-dash:1.11.1"
     api "androidx.media3:media3-exoplayer-hls:1.11.1"
     api "androidx.media3:media3-decoder-ffmpeg:1.11.1"
     api "androidx.media3:media3-session:1.11.1"
@@ -106,18 +110,9 @@ dependencies {
 
 //    implementation 'com.google.mlkit:translate:17.0.3'
 
-    constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
-            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-        }
-    }
-
     implementation 'androidx.browser:browser:1.10.0'
-    implementation 'app.nekogram.gifski:gifski:1.0.2'
-    implementation 'app.nekogram.translator:translator:2.0.0'
+    implementation 'app.nekogram.gifski:gifski:1.0.3'
+    implementation 'app.nekogram.translator:translator:2.0.2'
     implementation 'com.jaredrummler:truetypeparser-light:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:5.5.0'
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:6.1'
@@ -130,8 +125,6 @@ dependencies {
 }
 
 android {
-    sourceSets.main.jniLibs.srcDirs = ['./jni/']
-
     externalNativeBuild {
         cmake {
             path 'jni/CMakeLists.txt'
@@ -140,6 +133,10 @@ android {
 
     defaultConfig {
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
+
+        ndk {
+            abiFilters.addAll(rootProject.nativeAbis)
+        }
 
         externalNativeBuild {
             cmake {

@@ -42,6 +42,12 @@ android {
         }
     }
 
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     buildTypes {
         debug {
             if (localProperties.getProperty("storeFile") != null) {
@@ -74,19 +80,13 @@ android {
         manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty("mapsApiKey", "")]
     }
 
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
     splits.abi {
         var buildingBundle = gradle.startParameter.taskNames.any { it.startsWith("bundle") }
         enable !buildingBundle
-        universalApk true
+        universalApk rootProject.nativeAbis.size() > 1
 
         reset()
-        include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        include(*rootProject.nativeAbis)
     }
     namespace 'org.telegram.messenger.regular'
 

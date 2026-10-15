@@ -45,7 +45,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.ReplacementSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -128,6 +127,7 @@ import org.telegram.ui.iv.RichTextStyle;
 import org.telegram.ui.iv.Latex;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.web.WebInstantView;
+import org.telegram.utils.code.highlight.CodeHighlighting;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -1055,7 +1055,12 @@ public class RichMessageLayout {
             blocks.add(block);
             return block;
         } else if (pageBlock instanceof TL_iv.pageBlockTable) {
-            final RichBlock block = new RichTableBlock(this, padding, maxWidth, (TL_iv.pageBlockTable) pageBlock);
+            final RichBlock block;
+            try {
+                block = new RichTableBlock(this, padding, maxWidth, (TL_iv.pageBlockTable) pageBlock);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
             block.accessibilityLabelResId = R.string.AccDescrIVTable;
             blocks.add(block);
             return block;
@@ -2163,6 +2168,9 @@ public class RichMessageLayout {
                 tel = "+" + tel;
             }
             formatTextAndSetSpan(text.text, out, flags, new URLSpanReplacement("tel:" + tel, getTextStyleRun(TextStyleSpan.FLAG_STYLE_TEXT_URL)));
+        } else if (text instanceof TL_iv.textTonAddress) {
+            final String address = getString(text);
+            formatTextAndSetSpan(text.text, out, flags, new URLSpanNoUnderline("tonaddress:" + address));
         } else if (text instanceof TL_iv.textBankCard) {
             final String bankCard = getString(text);
             formatTextAndSetSpan(text.text, out, flags, new URLSpanNoUnderline("card:" + bankCard));
@@ -7063,7 +7071,7 @@ public class RichMessageLayout {
             this.photo = root.getPhoto(block.photo_id);
 
             if (photo != null) {
-                sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, AndroidUtilities.getPhotoSize());
+                sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, AndroidUtilities.getPhotoSize(true));
                 strippedSize = FileLoader.getStrippedPhotoSize(photo.sizes);
             } else {
                 sizeFull = null;
@@ -8060,7 +8068,7 @@ public class RichMessageLayout {
             this.pageBlock = pb;
             this.photo = root.getPhoto(pb.photo_id);
             if (photo != null) {
-                sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, AndroidUtilities.getPhotoSize());
+                sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, AndroidUtilities.getPhotoSize(true));
                 strippedSize = FileLoader.getStrippedPhotoSize(photo.sizes);
             } else {
                 sizeFull = null;
