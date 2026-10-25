@@ -1,4 +1,4 @@
-package org.telegram.utils.camera.roundvideo;
+package org.telegram.utils.recorder.round;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import tw.nekomimi.nekogram.NekoConfig;
+import tw.nekomimi.nekogram.helpers.VoiceEnhancementsHelper;
 
 final class RoundVideoCodecRecorder implements RoundVideoGlProcessor.FrameTimingListener {
     interface ErrorListener {
@@ -132,6 +135,9 @@ final class RoundVideoCodecRecorder implements RoundVideoGlProcessor.FrameTiming
         if (!prepared) throw new IllegalStateException("Recorder is not prepared");
         try {
             audioCodec.start();
+            if (NekoConfig.voiceEnhancements) {
+                VoiceEnhancementsHelper.initVoiceEnhancements(audioRecord.getAudioSessionId());
+            }
             audioRecord.startRecording();
             if (audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
                 throw new IllegalStateException("Unable to start AudioRecord");
@@ -695,6 +701,9 @@ final class RoundVideoCodecRecorder implements RoundVideoGlProcessor.FrameTiming
         audioReadyListener = null;
         videoReadyListener = null;
         if (audioRecord != null) { audioRecord.release(); audioRecord = null; }
+        if (NekoConfig.voiceEnhancements) {
+            VoiceEnhancementsHelper.releaseVoiceEnhancements();
+        }
         if (videoInputSurface != null) { videoInputSurface.release(); videoInputSurface = null; }
         releaseCodec(videoCodec);
         releaseCodec(audioCodec);

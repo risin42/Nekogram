@@ -32475,9 +32475,9 @@ public class ChatActivity extends BaseFragment implements
                         cell.setSubtext(getString(R.string.WelcomeMessageRevertInfo));
                         cell.setItemHeight(64);
                         cell.textView.setTranslationY(-dp(5));
-                        cell.subtextView.getCurrentView().setSingleLine(false);
-                        cell.subtextView.getCurrentView().setMaxLines(2);
-                        cell.subtextView.getCurrentView().setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
+                        cell.subtextView.setSingleLine(false);
+                        cell.subtextView.setMaxLines(2);
+                        cell.subtextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
                         cell.setColors(getThemedColor(Theme.key_text_RedRegular), getThemedColor(Theme.key_text_RedRegular));
                         cell.setSubtextColor(getThemedColor(Theme.key_text_RedRegular));
                         cell.setSelectorColor(Theme.multAlpha(getThemedColor(Theme.key_text_RedRegular), .12f));
@@ -35471,7 +35471,7 @@ public class ChatActivity extends BaseFragment implements
                     }
                 }
 
-                if (getMessagesStorage().isMonoForum(topicKey.dialogId)) {
+                if (getMessagesController().isMonoForum(topicKey.dialogId)) {
                     args.putInt("chatMode", ChatActivity.MODE_SUGGESTIONS);
                     if (!getMessagesController().isMonoForumWithManageRights(topicKey.dialogId)) {
                         args.putBoolean("isSubscriberSuggestions", true);
@@ -35622,7 +35622,7 @@ public class ChatActivity extends BaseFragment implements
         } else if (actionBar != null && actionBar.isActionModeShowed()) {
             if (invoked) clearSelectionMode();
             return false;
-        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+        } else if (chatActivityEnterView != null && chatActivityEnterView.canHidePopupByBackButton()) {
             if (invoked) chatActivityEnterView.hidePopup(true);
             return false;
 //        } else if (chatActivityEnterView != null && chatActivityEnterView.hasBotWebView() && chatActivityEnterView.botCommandsMenuIsShowing() && chatActivityEnterView.onBotWebViewBackPressed()) {
